@@ -33803,6 +33803,7 @@ async function main() {
     core.info(`There are ${pullRequestsWithoutLabel.length} pull requests waiting for reviews`);
     core.info(`Notification sent successfully!`);
   } catch (error) {
+    core.info(error);
     core.setFailed(error.message);
   }
 }
