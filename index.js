@@ -1,5 +1,7 @@
 
 const core = require('@actions/core');
+import {execAsync} from './exec-async'
+import parseGitDiff from 'parse-git-diff'
 const axios = require('axios');
 
 const {
@@ -117,10 +119,26 @@ async function main() {
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
       core.info(`Pull Request Title: ${pr.title}`);
-      const diffContent = await getDiffContent(pr.diff_url)
-      core.info(diffContent.data);
+      // const diffContent = await getDiffContent(pr.diff_url)
+      // core.info(diffContent.data);
+      const baseBranch = pr.default_branch
+      core.info(`baseBranch: ${baseBranch}`);
 
+      const searchPath = pr.head.ref
+      core.info(`searchPath: ${searchPath}`);
 
+      // --no-pager ensures that the git command does not use a pager (like less) to display the diff
+      const gitDiffCmd = `git --no-pager diff ${baseBranch} -- ${searchPath}`
+      core.debug(`running git diff command: ${gitDiffCmd}`)
+      const {stdout, stderr} = await execAsync(gitDiffCmd, {
+        maxBuffer: maxBufferSize
+      })
+      const gitDiff = stdout
+
+      // JSON diff
+      const diff = parseGitDiff(gitDiff)
+      const jsonDiff = JSON.stringify(diff)
+      core.debug(`running git diff command: ${jsonDiff}`)
     }
 
     // 看差異
@@ -131,3 +149,4 @@ async function main() {
 }
 
 main();
+
