@@ -1,0 +1,8 @@
+name: 'Pull request reviews reminder action'
+description: 'Automatically send notification for pull requests waiting for reviewers'
+branding:
+  icon: 'bell'
+  color: 'red'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
