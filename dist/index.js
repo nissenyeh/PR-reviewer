@@ -33790,6 +33790,7 @@ async function getPullRequests() {
  */
 async function main() {
   try {
+    core.info('Starting...');
     core.info('Getting open pull requests...');
     const pullRequests = await getPullRequests();
     const totalReviewers = await getPullRequestsReviewersCount(pullRequests.data);
