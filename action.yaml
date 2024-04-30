@@ -3,6 +3,12 @@ description: 'Automatically send notification for pull requests waiting for revi
 branding:
   icon: 'bell'
   color: 'red'
+inputs:
+  open-time:
+    description: ''
+    required: false
+    default: ''
 runs:
   using: 'node20'
   main: 'dist/index.js'
+
