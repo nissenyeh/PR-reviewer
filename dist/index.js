@@ -33839,6 +33839,20 @@ async function getOpenAI(code) {
   return axios(config);
 }
 
+async function getDiffContent(diffUrl) {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: diffUrl,
+      headers: AUTH_HEADER
+    });
+    return response.data; // 返回 diff 的內容
+  } catch (error) {
+    console.error('Error fetching diff content:', error);
+    return null;
+  }
+}
+
 
 /**
  * Main function for the GitHub Action
@@ -33854,9 +33868,8 @@ async function main() {
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
       core.info(`Pull Request Title: ${pr.title}`);
-      const diff = pr.diff_url
-      core.info(diff);
-
+      const diffContent = await getDiffContent(pr.diff_url)
+      core.info(diffContent);
 
 
     }
