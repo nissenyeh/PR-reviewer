@@ -49,25 +49,14 @@ const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 async function getOldPullRequests(days) {
 
   const query = `repo:${GITHUB_REPOSITORY} is:pr is:open created:<${getDateXDaysAgo(days)}`;
-  const headers = {
-    Authorization: `token ${GITHUB_TOKEN}`,
-    'Accept': 'application/vnd.github.v3+json'
-  };
-
-  try {
-    const response = await axios({
-      method: 'GET',
-      url: SEARCH_ENDPOINT,
-      headers: headers,
-      params: {
-        q: query
-      }
-    });
-    return response.data.items; // 返回的是符合條件的 PR 列表
-  } catch (error) {
-    console.error('Error fetching old pull requests:', error);
-    return null;
-  }
+  return axios({
+    method: 'GET',
+    url: SEARCH_ENDPOINT,
+    headers: AUTH_HEADER,
+    params: {
+      q: query
+    }
+  });
 }
 
 
