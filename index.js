@@ -61,7 +61,6 @@ async function getOldPullRequests(days) {
 
 
 // call open AI
-var axios = require('axios');
 
 async function getOpenAI(code) {
   var data = JSON.stringify(
