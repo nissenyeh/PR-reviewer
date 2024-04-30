@@ -34271,7 +34271,7 @@ async function main() {
       const gitDiffCmd = `git --no-pager diff ${baseBranch} -- ${searchPath}`
       core.debug(`running git diff command: ${gitDiffCmd}`)
       const {stdout, stderr} = await execAsync(gitDiffCmd, {
-        maxBuffer: maxBufferSize
+        maxBuffer: 1000000
       })
       const gitDiff = stdout
 
