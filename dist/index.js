@@ -33804,7 +33804,7 @@ async function main() {
     core.info(`Notification sent successfully!`);
   } catch (error) {
     core.info(error);
-    core.setFailed(error.message);
+    core.setFailed(error);
   }
 }
 
