@@ -22,6 +22,7 @@ const AUTH_HEADER = {
 };
 const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
+
 /**
  * Get Pull Requests from GitHub repository
  * @return {Promise} Axios promise
@@ -41,6 +42,7 @@ async function getPullRequests() {
 async function main() {
   try {
     core.info('Starting...');
+    core.info(PULLS_ENDPOINT);
     core.info('Getting open pull requests...');
     core.info(GITHUB_TOKEN)
     core.info(GITHUB_REPOSITORY)
