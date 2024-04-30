@@ -42,6 +42,9 @@ async function main() {
   try {
     core.info('Starting...');
     core.info('Getting open pull requests...');
+    core.info(GITHUB_TOKEN)
+    core.info(GITHUB_REPOSITORY)
+    core.info(GITHUB_API_URL)
     const pullRequests = await getPullRequests();
     const totalReviewers = await getPullRequestsReviewersCount(pullRequests.data);
     core.info(`There are ${pullRequests.data.length} open pull requests and ${totalReviewers} reviewers`);
