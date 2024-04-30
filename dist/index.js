@@ -34261,7 +34261,7 @@ async function main() {
       core.info(`Pull Request Title: ${pr.title}`);
       // const diffContent = await getDiffContent(pr.diff_url)
       // core.info(diffContent.data);
-      const baseBranch = pr.default_branch
+      const baseBranch = pr.repo.default_branch
       core.info(`baseBranch: ${baseBranch}`);
 
       const searchPath = pr.head.ref
