@@ -34269,7 +34269,7 @@ async function main() {
 
       // --no-pager ensures that the git command does not use a pager (like less) to display the diff
       const gitDiffCmd = `git --no-pager diff ${baseBranch} -- ${searchPath}`
-      core.debug(`running git diff command: ${gitDiffCmd}`)
+      core.info(`running git diff command: ${gitDiffCmd}`)
       const {stdout, stderr} = await execAsync(gitDiffCmd, {
         maxBuffer: 1000000
       })
@@ -34278,7 +34278,7 @@ async function main() {
       // JSON diff
       const diff = mjs(gitDiff)
       const jsonDiff = JSON.stringify(diff)
-      core.debug(`running git diff command: ${jsonDiff}`)
+      core.info(`running git diff command: ${jsonDiff}`)
     }
 
     // 看差異
