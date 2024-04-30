@@ -33817,19 +33817,13 @@ async function main() {
   try {
     core.info('Starting...');
     core.info('Getting open pull requests...');
-
     const openTime = core.getInput('open-time');
     core.info('openTime...');
     core.info(openTime);
     const pullRequests = await getOldPullRequests(openTime);
-    core.info(pullRequests);
-    // const pullRequests = await getPullRequests();
-    const totalReviewers = await getPullRequestsReviewersCount(pullRequests.data);
-    core.info(`There are ${pullRequests.data.length} open pull requests and ${totalReviewers} reviewers`);
-    const pullRequestsToReview = getPullRequestsToReview(pullRequests.data);
-    const pullRequestsWithoutLabel = getPullRequestsWithoutLabel(pullRequestsToReview, ignoreLabel);
-    core.info(`There are ${pullRequestsWithoutLabel.length} pull requests waiting for reviews`);
-    core.info(`Notification sent successfully!`);
+    for (const pr of pullRequests) {
+      core.info(`Pull Request Title: ${pr.title}`);
+    }
   } catch (error) {
     core.info(error);
     core.setFailed(error);
