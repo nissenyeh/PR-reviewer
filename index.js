@@ -91,12 +91,11 @@ async function getOpenAI(code) {
 
 async function getDiffContent(diffUrl) {
   try {
-    const response = await axios({
+    return await axios({
       method: 'GET',
       url: diffUrl,
       headers: AUTH_HEADER
     });
-    return response.data; // 返回 diff 的內容
   } catch (error) {
     console.error('Error fetching diff content:', error);
     return null;
@@ -119,7 +118,7 @@ async function main() {
     for (const pr of pullRequests.data) {
       core.info(`Pull Request Title: ${pr.title}`);
       const diffContent = await getDiffContent(pr.diff_url)
-      core.info(diffContent);
+      core.info(diffContent.data);
 
 
     }
