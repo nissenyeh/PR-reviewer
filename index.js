@@ -90,16 +90,6 @@ async function getOpenAI(code) {
 }
 
 
-axios(config)
-.then(function (response) {
-  console.log(JSON.stringify(response.data));
-})
-.catch(function (error) {
-  console.log(error);
-});
-
-
-
 /**
  * Main function for the GitHub Action
  */
