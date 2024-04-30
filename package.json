@@ -3,7 +3,7 @@
   "version": "2.8.0",
   "description": "Reminder for Pull Request pending reviews",
   "scripts": {
-    "build": "ncc build index.js",
+    "build": "ncc build index.js"
   },
   "repository": {
     "type": "git",
@@ -20,10 +20,6 @@
     "axios": "^1.6.8"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^8.41.0",
-    "eslint-config-google": "^0.14.0",
-    "mocha": "^10.4.0",
-    "nyc": "^15.1.0"
+    "@vercel/ncc": "^0.38.1"
   }
 }
