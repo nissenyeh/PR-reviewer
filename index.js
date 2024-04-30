@@ -71,7 +71,7 @@ async function main() {
     core.info('openTime...');
     core.info(openTime);
     const pullRequests = await getOldPullRequests(openTime);
-    for (const pr of pullRequests) {
+    for (const pr of pullRequests.data) {
       core.info(`Pull Request Title: ${pr.title}`);
     }
   } catch (error) {
