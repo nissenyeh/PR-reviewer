@@ -34290,13 +34290,15 @@ async function main() {
       const timeDiff = Math.abs(currentTime - prCreatedAt);
       const hoursOpen = Math.floor((timeDiff / (1000 * 60 * 60)));
       const daysOpen = Math.floor(hoursOpen / 24);
+      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
 
       // 上次更新時間
       const prUpdatedAt = new Date(pr.updated_at);
       const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
       const lastUpdatedDaysAgo = Math.floor(lastUpdatedHoursAgo / 24);
+      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
-      const PR_message = `此 PR 「${pr.title}」已經存活 ${hoursOpen} 小時 (${daysOpen} 天)，上次更新時間是 ${lastUpdatedHoursAgo} 小時（${lastUpdatedDaysAgo} 天) 以前`
+      const PR_message = `此 PR 「${pr.title}」已經存活 ${hoursOpen} 小時  ${daysOpenMessage} ，上次更新時間是 ${lastUpdatedHoursAgo} 小時 ${lastUpdatedDaysMessage}  以前`
       core.info(PR_message);
       
       try {
