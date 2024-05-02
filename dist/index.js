@@ -34192,20 +34192,20 @@ async function getPullRequest(pull_number) {
 // call open AI
 
 async function getOpenAI(prompt) {
-  var data = JSON.stringify(
-    {"data":{
-        "messages":[
-          {
-            "role":"user",
-            "content": `${prompt}` 
-          }],
-        "max_tokens":512,
-        "temperature":0.9,
-        "model":"gpt-3.5-turbo",
-        "stream":false
-      }
-    });
-  
+  var data = JSON.stringify({
+    "data": {
+      "messages": [
+        {
+          "role": "user",
+          "content": prompt
+        }
+      ],
+      "max_tokens": 512,
+      "temperature": 0.9,
+      "model": "gpt-3.5-turbo",
+      "stream": false
+    }
+  });
   var config = {
     method: 'post',
     url: 'https://ci-live-feat-video-ai-dot-junyiacademy.appspot.com/api/v2/jutor/hf-chat',
