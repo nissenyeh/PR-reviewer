@@ -139,7 +139,10 @@ async function main() {
       core.info(`Pull Request Body: ${pr.body}`);
     
       // 制定 Prompt 內容
+      core.info(`=========PR_BODY===============`);
       const PR_BODY = pr.body.replace(/\n/g, ' ')
+      core.info(PR_BODY);
+      
 
       core.info(`=========Open AI===============`);
       const prompt = `Github Pull Request 內容如下

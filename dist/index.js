@@ -34256,10 +34256,14 @@ async function main() {
       core.info(`Pull Request Body: ${pr.body}`);
     
       // 制定 Prompt 內容
+      core.info(`=========PR_BODY===============`);
+      const PR_BODY = pr.body.replace(/\n/g, ' ')
+      core.info(PR_BODY);
+      
 
       core.info(`=========Open AI===============`);
       const prompt = `Github Pull Request 內容如下
-      標題：${pr.title} 內容：${pr.body}
+      標題：${pr.title} 內容：${PR_BODY}
       -----
       請幫我根據以上的標題與內容，用中文遵守以下格式，回答
       1. 簡單介紹 PR 內容
