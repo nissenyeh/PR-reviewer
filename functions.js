@@ -159,6 +159,7 @@ function formatSlackMessage(channel, blocks) {
   const messageData = {
     channel: channel,
     username: 'Pull Request reviews reminder',
+    text: '測試訊息',
     blocks: blocks
   };
   return messageData;
