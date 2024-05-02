@@ -34298,6 +34298,8 @@ async function main() {
 
       const PR_message = `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
       core.info(PR_message);
+
+      core.info(`ready to send message to ${webhookUrl} and ${slackChannel}`)
 //       const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
 // *AI小警察介紹*：${ai_suggestion}\n
 // *PR連結*：${prLink}
