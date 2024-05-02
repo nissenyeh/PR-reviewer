@@ -168,10 +168,10 @@ async function main() {
       const prLink = pr.html_url;
 
       const slack_message = `
-        這個 PR 已經 open ${hoursOpen} hr，徵求 Reviewer !
-        PR 連結：${prLink}
-        (以下為 AI 建議）
-        ${ai_suggestion}
+      PR title: ${pr.title}\n
+      PR link: ${prLink}\n
+      這個 PR 已經 open ${hoursOpen} hr，徵求 Reviewer !\n
+      AI 小警察介紹：${ai_suggestion}
       `
       
       core.info(slack_message)
