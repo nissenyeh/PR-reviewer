@@ -34254,6 +34254,8 @@ async function getDiffContent(diffUrl) {
 async function main() {
   try {
     // 獲取開啟一段時間的 PR 
+    const webhookUrl = core.getInput('webhook-url');
+    const channel = core.getInput('channel');
     const openTime = core.getInput('open-time');
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
@@ -34284,21 +34286,20 @@ async function main() {
 
       const prLink = pr.html_url;
 
-      const slack_message = `這個 PR： [${pr.title}](${prLink})，已經開啟了 ${hoursOpen} hr \n
-AI 小警察介紹：${ai_suggestion}`
-      
+      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr \n
+**AI小警察介紹**：${ai_suggestion}\n
+**PR連結**：${prLink}
+========
+`
       core.info(slack_message)
-
-      const webhookUrl = core.getInput('webhook-url');
-      const channel = core.getInput('channel');
-
       const messageObject = formatSlackMessage(channel, slack_message);
       const resNotification = await sendNotification(webhookUrl, messageObject);
-
-
-      // 串接到 slack
     }
+      
+    
 
+
+    // 串接到 slack
     // 看差異
   } catch (error) {
     core.info(error);
