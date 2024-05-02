@@ -34284,7 +34284,7 @@ async function main() {
 
       const prLink = pr.html_url;
 
-      const slack_message = `這個 PR： ${pr.title}[${prLink}]，已經 open ${hoursOpen} hr \n
+      const slack_message = `這個 PR： [${pr.title}](${prLink})，已經開啟了 ${hoursOpen} hr \n
 AI 小警察介紹：${ai_suggestion}`
       
       core.info(slack_message)
