@@ -34268,15 +34268,10 @@ async function main() {
         1. 簡單介紹 PR 內容
         2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
         `
-  
-        const ai_response_test = await getOpenAI("請說聲你好")
-        const ai_response_test_ok = ai_response_test.data.data.choices[0].message.content
-  
-        core.info(ai_response_test_ok);
-        
+      
         //  這邊可以調整一下，如果 fail 送提醒就好
         const ai_response = await getOpenAI(prompt)
-        const ai_suggestion = ai_response.data.data.choices[0].message.content
+        ai_suggestion = ai_response.data.data.choices[0].message.content
   
         core.info(ai_suggestion);
       } catch (error) {
@@ -34299,7 +34294,7 @@ async function main() {
       const PR_message = `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
       core.info(PR_message);
 
-      core.info(`ready to send message to ${webhookUrl} and ${slackChannel}`)
+      core.info(`ready to send message to ${webhookUrl} and ${channel}`)
 //       const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
 // *AI小警察介紹*：${ai_suggestion}\n
 // *PR連結*：${prLink}
