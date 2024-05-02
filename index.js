@@ -179,20 +179,6 @@ async function main() {
       try {
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
 
-        const slack_block_test =  [
-          {
-            "type": "header",
-            "text": {
-              "type": "plain_text",
-              "text": "PR 巡邏小警察（測試）",
-              "emoji": true
-            }
-          },
-        ]
-        const messageObject_test = formatSlackMessage(channel, slack_block_test);
-        const resNotification_test = await sendNotification(webhookUrl, messageObject_test);
-
-        core.info(`準備發正式訊息`)
         const slack_block =  [
             {
               "type": "header",
