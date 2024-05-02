@@ -140,25 +140,31 @@ async function main() {
       const PR_BODY = pr.body.replace(/\n/g, ' ')
       core.info(PR_BODY);
       
+      let ai_suggestion = '本次沒有生成 AI 建議'
 
-      core.info(`=========Open AI===============`);
-      const prompt = `Github Pull Request 內容如下
-      標題：${pr.title} 內容：${PR_BODY}
-      -----
-      請幫我根據以上的標題與內容，用中文遵守以下格式，回答
-      1. 簡單介紹 PR 內容
-      2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
-      `
-
-      const ai_response_test = await getOpenAI("請說聲你好")
-      const ai_response_test_ok = ai_response_test.data.data.choices[0].message.content
-
-      core.info(ai_response_test_ok);
-
-      const ai_response = await getOpenAI(prompt)
-      const ai_suggestion = ai_response.data.data.choices[0].message.content
-
-      core.info(ai_suggestion);
+      try {
+        core.info(`=========Open AI===============`);
+        const prompt = `Github Pull Request 內容如下
+        標題：${pr.title} 內容：${PR_BODY}
+        -----
+        請幫我根據以上的標題與內容，用中文遵守以下格式，回答
+        1. 簡單介紹 PR 內容
+        2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
+        `
+  
+        const ai_response_test = await getOpenAI("請說聲你好")
+        const ai_response_test_ok = ai_response_test.data.data.choices[0].message.content
+  
+        core.info(ai_response_test_ok);
+        
+        //  這邊可以調整一下，如果 fail 送提醒就好
+        const ai_response = await getOpenAI(prompt)
+        const ai_suggestion = ai_response.data.data.choices[0].message.content
+  
+        core.info(ai_suggestion);
+      } catch (error) {
+        core.error('Open AI 失敗，請檢查並重新嘗試');
+      }
 
       // 獲取內容
       // core.info(ai_suggestion)
