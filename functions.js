@@ -159,7 +159,7 @@ function formatSlackMessage(channel, message, block) {
   const messageData = {
     channel: channel,
     username: 'Pull Request reviews reminder',
-    text: message,
+    // text: message,
     block: block
   };
   return messageData;

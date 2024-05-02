@@ -165,7 +165,7 @@ function formatSlackMessage(channel, message, block) {
   const messageData = {
     channel: channel,
     username: 'Pull Request reviews reminder',
-    text: message,
+    // text: message,
     block: block
   };
   return messageData;
@@ -34292,6 +34292,7 @@ async function main() {
 *PR連結*：${prLink}
 ========
 `
+      core.info(slack_message)
 
       const slack_block =  [
           {
@@ -34337,7 +34338,7 @@ async function main() {
           }
       ]
 
-      core.info(slack_message)
+
       const messageObject = formatSlackMessage(channel, slack_message, slack_block);
       const resNotification = await sendNotification(webhookUrl, messageObject);
       
