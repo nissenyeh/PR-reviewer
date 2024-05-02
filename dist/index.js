@@ -34319,35 +34319,14 @@ async function main() {
                   "elements": [
                     {
                       "type": "text",
-                      "text": "▌標題:\n",
+                      "text": `▌ 標題 / 作者 : \n`,
                       "style": {
                         "bold": true
                       }
                     },
                     {
                       "type": "text",
-                      "text": pr.title
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "rich_text",
-              "elements": [
-                {
-                  "type": "rich_text_section",
-                  "elements": [
-                    {
-                      "type": "text",
-                      "text": "▌PR 作者:\n",
-                      "style": {
-                        "bold": true
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "text": pr.user.login
+                      "text": `${pr.title} / ${pr.user.login}`
                     }
                   ]
                 }
@@ -34389,7 +34368,7 @@ async function main() {
                     },
                     {
                       "type": "text",
-                      "text": ` ${lastUpdatedHoursAgo} 小時 ${lastUpdatedDaysMessage} 以前`
+                      "text": `${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
                     }
                   ]
                 }
