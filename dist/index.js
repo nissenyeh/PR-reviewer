@@ -34293,12 +34293,12 @@ async function main() {
       const prUpdatedAt = new Date(pr.updated_at);
       const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
 
-      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
-*AI小警察介紹*：${ai_suggestion}\n
-*PR連結*：${prLink}
-========
-`
-      core.info(slack_message)
+//       const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
+// *AI小警察介紹*：${ai_suggestion}\n
+// *PR連結*：${prLink}
+// ========
+// `
+      // core.info(slack_message)
 
       const slack_block =  [
           {
@@ -34324,7 +34324,7 @@ async function main() {
                   },
                   {
                     "type": "text",
-                    "text": `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時`
+                    "text": `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
                   }
                 ]
               }
