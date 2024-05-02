@@ -34293,87 +34293,84 @@ async function main() {
 
       const PR_message = `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
       core.info(PR_message);
-
-      core.info(`ready to send message to ${webhookUrl} and ${channel}`)
-//       const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
-// *AI小警察介紹*：${ai_suggestion}\n
-// *PR連結*：${prLink}
-// ========
-// `
-      // core.info(slack_message)
-
-      const slack_block =  [
-          {
-            "type": "header",
-            "text": {
-              "type": "plain_text",
-              "text": "PR 巡邏小警察",
-              "emoji": true
-            }
-          },
-          {
-            "type": "rich_text",
-            "elements": [
-              {
-                "type": "rich_text_section",
-                "elements": [
-                  {
-                    "type": "text",
-                    "text": "說明:\n",
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "text",
-                    "text": PR_message
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "rich_text",
-            "elements": [
-              {
-                "type": "rich_text_section",
-                "elements": [
-                  {
-                    "type": "text",
-                    "text": "AI 小警察介紹:\n",
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "text",
-                    "text": `${ai_suggestion}`
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "actions",
-            "elements": [
-              {
-                "type": "button",
-                "text": {
-                  "type": "plain_text",
-                  "emoji": true,
-                  "text": "查看 PR 詳細內容"
-                },
-                "style": "primary",
-                "url": prLink
-              }
-            ]
-          }
-      ]
-
-
-      const messageObject = formatSlackMessage(channel, slack_block);
-      const resNotification = await sendNotification(webhookUrl, messageObject);
       
+      try {
+        core.info(`ready to send message to ${webhookUrl} and ${channel}`)
+
+        const slack_block =  [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "PR 巡邏小警察",
+                "emoji": true
+              }
+            },
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "說明:\n",
+                      "style": {
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": PR_message
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "AI 小警察介紹:\n",
+                      "style": {
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": `${ai_suggestion}`
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "actions",
+              "elements": [
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "emoji": true,
+                    "text": "查看 PR 詳細內容"
+                  },
+                  "style": "primary",
+                  "url": prLink
+                }
+              ]
+            }
+        ]
+
+
+        const messageObject = formatSlackMessage(channel, slack_block);
+        const resNotification = await sendNotification(webhookUrl, messageObject);
+      } catch (error) {
+        core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
+      }
     
     }
 
