@@ -193,7 +193,7 @@ async function main() {
                 "elements": [
                   {
                     "type": "text",
-                    "text": "說明:",
+                    "text": "說明:\n",
                     "style": {
                       "bold": true
                     }
