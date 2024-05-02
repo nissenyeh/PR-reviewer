@@ -143,7 +143,8 @@ async function main() {
       core.info(`prompt: ${prompt}`);
 
       const ai_response = getOpenAI(prompt)
-      core.info(`${ai_response.data.data.choices.message.content}`)
+      core.info(JSON.stringify(ai_response));
+      // core.info(`${ai_response.data.data.choices.message.content}`)
     }
 
     // 看差異
