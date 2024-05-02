@@ -34122,9 +34122,6 @@ const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
 
 const {
-  getPullRequestsToReview,
-  getPullRequestsWithoutLabel,
-  getPullRequestsReviewersCount,
   createPr2UserArray,
   checkGithubProviderFormat,
   prettyMessage,
@@ -34379,7 +34376,7 @@ async function main() {
     // 看差異
   } catch (error) {
     core.info(error);
-    core.setFailed(error);
+    core.setFailed(error.message);
   }
 }
 

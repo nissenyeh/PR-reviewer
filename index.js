@@ -5,9 +5,6 @@ import parseGitDiff from 'parse-git-diff'
 const axios = require('axios');
 
 const {
-  getPullRequestsToReview,
-  getPullRequestsWithoutLabel,
-  getPullRequestsReviewersCount,
   createPr2UserArray,
   checkGithubProviderFormat,
   prettyMessage,
@@ -262,7 +259,7 @@ async function main() {
     // 看差異
   } catch (error) {
     core.info(error);
-    core.setFailed(error);
+    core.setFailed(error.message);
   }
 }
 
