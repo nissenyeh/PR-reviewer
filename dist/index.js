@@ -34261,6 +34261,7 @@ async function main() {
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
 
+
       // 獲取 Pull Request 標題與內容
 
       core.info(`Pull Request Title: ${pr.title}`);
@@ -34289,7 +34290,10 @@ async function main() {
 
       const prLink = pr.html_url;
 
-      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr \n
+      const prUpdatedAt = new Date(pr.updated_at);
+      const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
+
+      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，距離上次更新時間是 ${lastUpdatedHoursAgo} hr \n
 *AI小警察介紹*：${ai_suggestion}\n
 *PR連結*：${prLink}
 ========
