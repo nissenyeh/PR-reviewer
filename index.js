@@ -61,6 +61,16 @@ async function getOldPullRequests(days) {
   });
 }
 
+async function getPullRequests(pull_number) {
+
+  const endpoint = SEARCH_ENDPOINT + '/' + pull_number
+  return axios({
+    method: 'GET',
+    url: endpoint,
+    headers: AUTH_HEADER,
+  });
+}
+ 
 
 // call open AI
 
@@ -121,24 +131,11 @@ async function main() {
       core.info(`Pull Request Title: ${pr.title}`);
       // const diffContent = await getDiffContent(pr.diff_url)
       // core.info(diffContent.data);
-      const baseBranch = pr.base.ref
-      core.info(`baseBranch: ${baseBranch}`);
-
-      const searchPath = pr.head.ref
-      core.info(`searchPath: ${searchPath}`);
-
-      // --no-pager ensures that the git command does not use a pager (like less) to display the diff
-      const gitDiffCmd = `git --no-pager diff refs/remotes/origin/${baseBranch}...refs/remotes/origin/${searchPath}`
-      core.info(`running git diff command: ${gitDiffCmd}`)
-      const {stdout, stderr} = await execAsync(gitDiffCmd, {
-        maxBuffer: 1000000
-      })
-      const gitDiff = stdout
-
-      // JSON diff
-      const diff = parseGitDiff(gitDiff)
-      const jsonDiff = JSON.stringify(diff)
-      core.info(`running git diff command: ${jsonDiff}`)
+      PR_ID = pr.id
+      core.info(`PR_ID: ${PR_ID}`);
+      const pull = await getOldPullRequests(PR_ID);
+      
+      core.info(`get pull: ${pull}`)
     }
 
     // 看差異
