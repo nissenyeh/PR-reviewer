@@ -34335,15 +34335,14 @@ async function main() {
               }
             ]
           }
-        ]
-      }
+      ]
 
       core.info(slack_message)
       const messageObject = formatSlackMessage(channel, slack_message, slack_block);
       const resNotification = await sendNotification(webhookUrl, messageObject);
       
     
-
+    }
 
     // 串接到 slack
     // 看差異
