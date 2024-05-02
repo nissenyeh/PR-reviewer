@@ -13,15 +13,20 @@ on:
     - cron: "0 8-17/2 * * 1-5"
 
 jobs:
-  pr-reviews-reminder:
+  my_job:
     runs-on: ubuntu-latest
+    permissions: # assign read permission to PR-reviewer
+      pull-requests: read
     steps:
-    - uses: davideviolante/pr-reviews-reminder-action@v2.8.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        webhook-url: '' # Required
-        channel: '' # Optional, eg: #general
+      - name: PR Reviewer
+        uses: nissenyeh/PR-reviewer@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # or personal token
+        with:
+          open-time: 0 # Required
+          webhook-url: 'https://hooks.slack.com/services/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' # Required
+          channel: '#nissen測試' # Optional, eg: #general
+
 ```
 
 ## 如何獲取 Slack webhook URL
