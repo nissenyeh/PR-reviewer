@@ -155,11 +155,10 @@ function getTeamsMentions(github2provider, pr2user) {
  * @param {String} message slack message text
  * @return {Object} Slack message data object
  */
-function formatSlackMessage(channel, message, blocks) {
+function formatSlackMessage(channel, blocks) {
   const messageData = {
     channel: channel,
     username: 'Pull Request reviews reminder',
-    text: message,
     blocks: blocks
   };
   return messageData;

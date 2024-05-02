@@ -251,7 +251,7 @@ async function main() {
       ]
 
 
-      const messageObject = formatSlackMessage(channel, slack_message, slack_block);
+      const messageObject = formatSlackMessage(channel, slack_block);
       const resNotification = await sendNotification(webhookUrl, messageObject);
       
     
