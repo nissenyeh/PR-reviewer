@@ -162,18 +162,23 @@ async function main() {
       core.info(ai_suggestion)
       // 獲取內容
       core.info(`=========發送 slack 通知===============`);
+      const prLink = pr.html_url;
 
+
+
+      // 存活時間
       const prCreatedAt = new Date(pr.created_at);
       const currentTime = new Date();
       const timeDiff = Math.abs(currentTime - prCreatedAt);
       const hoursOpen = Math.floor((timeDiff / (1000 * 60 * 60)));
+      const daysOpen = Math.floor(hoursOpen / 24);
 
-      const prLink = pr.html_url;
-
+      // 上次更新時間
       const prUpdatedAt = new Date(pr.updated_at);
       const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
+      const lastUpdatedDaysAgo = Math.floor(lastUpdatedHoursAgo / 24);
 
-      const PR_message = `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
+      const PR_message = `此 PR 「${pr.title}」已經存活 ${hoursOpen} 小時 (${daysOpen} 天)，上次更新時間是 ${lastUpdatedHoursAgo} 小時（${lastUpdatedDaysAgo} 天) 以前`
       core.info(PR_message);
       
       try {
