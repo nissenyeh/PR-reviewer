@@ -80,7 +80,7 @@ async function getOpenAI(prompt) {
       "messages":[
         {
             "role":"system",
-            "content": prompt
+            "content": `${prompt}` 
         },
         {"role":"user","content":"hello"}],
         "max_tokens":512,
@@ -135,8 +135,7 @@ async function main() {
       core.info(`Pull Request Body: ${pr.body}`);
     
 
-      const prompt = 
-      ```請幫我根據這以下Github Pull Request 的標題與內容
+      const prompt = ```請幫我根據這以下Github Pull Request 的標題與內容
       標題：${pr.title}
       內容：${pr.body}
       -----
