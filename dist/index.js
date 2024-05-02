@@ -34191,12 +34191,14 @@ async function getPullRequest(pull_number) {
 
 // call open AI
 
-async function getOpenAI(code) {
+async function getOpenAI(prompt) {
   var data = JSON.stringify(
     {"data":{
       "messages":[
-        {"role":"system",
-        "content":`請幫我分析這段程式碼，並且大概描述內容，並且推薦適合 Reviwer 的人 ${code}`},
+        {
+            "role":"system",
+            "content": prompt
+        },
         {"role":"user","content":"hello"}],
         "max_tokens":512,
         "temperature":0.9,
@@ -34245,14 +34247,21 @@ async function main() {
     core.info(openTime);
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
+
       core.info(`Pull Request Title: ${pr.title}`);
-      // const diffContent = await getDiffContent(pr.diff_url)
-      // core.info(diffContent.data);
-      core.info(`PR_ID: ${pr.id}`);
-      const pullRequestId = pr.id
-      const pull = await getPullRequest(pullRequestId);
+      core.info(`Pull Request Body: ${pr.body}`);
       
       core.info(`get pull: ${pull}`)
+
+      const prompt = 
+      ```請幫我根據這以下Github Pull Request 的標題與內容
+      1. 簡述該 PR 內容
+      2. 描述可能適合審核的工程師
+      標題：${pr.title}
+      內容：${pr.body}
+      ```
+      const ai_response = getOpenAI(prompt)
+      core.info(`${ai_response}`)
     }
 
     // 看差異
