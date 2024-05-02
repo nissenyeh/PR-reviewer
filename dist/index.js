@@ -34274,6 +34274,7 @@ async function main() {
   
         core.info(ai_suggestion);
       } catch (error) {
+        core.error(error)
         core.error('Open AI 失敗，請檢查並重新嘗試');
       }
       core.info(ai_suggestion)
@@ -34307,7 +34308,7 @@ async function main() {
           },
         ]
         const messageObject_test = formatSlackMessage(channel, slack_block_test);
-        const resNotification_test = await sendNotification(webhookUrl, messageObject);
+        const resNotification_test = await sendNotification(webhookUrl, messageObject_test);
 
         core.info(`準備發正式訊息`)
         const slack_block =  [
@@ -34382,6 +34383,7 @@ async function main() {
         const messageObject = formatSlackMessage(channel, slack_block);
         const resNotification = await sendNotification(webhookUrl, messageObject);
       } catch (error) {
+        core.error(error)
         core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
       }
     
