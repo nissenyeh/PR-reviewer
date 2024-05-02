@@ -34293,7 +34293,7 @@ async function main() {
       const prUpdatedAt = new Date(pr.updated_at);
       const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
 
-      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，距離上次更新時間是 ${lastUpdatedHoursAgo} hr \n
+      const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
 *AI小警察介紹*：${ai_suggestion}\n
 *PR連結*：${prLink}
 ========
