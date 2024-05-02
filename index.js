@@ -77,12 +77,11 @@ async function getPullRequest(pull_number) {
 async function getOpenAI(prompt) {
   var data = JSON.stringify(
     {"data":{
-      "messages":[
-        {
-            "role":"system",
+        "messages":[
+          {
+            "role":"user",
             "content": `${prompt}` 
-        },
-        {"role":"user","content":"hello"}],
+          }],
         "max_tokens":512,
         "temperature":0.9,
         "model":"gpt-3.5-turbo",
@@ -136,9 +135,7 @@ async function main() {
     
 
       const prompt = ```請幫我根據這以下Github Pull Request 的標題與內容
-      標題：${pr.title}
-      內容：${pr.body}
-      -----
+      標題：${pr.title} 內容：${pr.body}
       1. 簡單介紹 PR 內容
       2. 推薦可能適合審核的工程師（會感興趣的人）
       ```
