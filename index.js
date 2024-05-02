@@ -145,7 +145,7 @@ async function main() {
       const ai_response = await getOpenAI(prompt)
       core.info(`${ai_response}`)
       core.info(`${ai_response.data}`)
-      core.info(`${ai_response.data.choices.message.content}`)
+      core.info(`${ai_response.data.choices[0].message.content}`)
       core.info(`${ai_response.data.data}`)
       core.info(`${ai_response.data.data.choices.message.content}`)
     }
