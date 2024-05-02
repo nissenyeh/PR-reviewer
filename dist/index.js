@@ -34284,7 +34284,7 @@ async function main() {
       }
 
       // 獲取內容
-      // core.info(ai_suggestion)
+      core.info(ai_suggestion)
 
       const prCreatedAt = new Date(pr.created_at);
       const currentTime = new Date();
