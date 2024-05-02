@@ -131,9 +131,9 @@ async function main() {
       core.info(`Pull Request Title: ${pr.title}`);
       // const diffContent = await getDiffContent(pr.diff_url)
       // core.info(diffContent.data);
-      PR_ID = pr.id
-      core.info(`PR_ID: ${PR_ID}`);
-      const pull = await getPullRequest(PR_ID);
+      core.info(`PR_ID: ${pr.id}`);
+      const pullRequestId = pr.id
+      const pull = await getPullRequest(pullRequestId);
       
       core.info(`get pull: ${pull}`)
     }
