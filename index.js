@@ -174,10 +174,55 @@ async function main() {
 *PR連結*：${prLink}
 ========
 `
+
+      const slack_block =  [
+          {
+            "type": "header",
+            "text": {
+              "type": "plain_text",
+              "text": "PR 巡邏小警察",
+              "emoji": true
+            }
+          },
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "mrkdwn",
+                "text": `*說明:*\n 此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時`
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "mrkdwn",
+                "text": `*AI 小警察介紹:* ${ai_suggestion}\n ....`
+              }
+            ]
+          },
+          {
+            "type": "actions",
+            "elements": [
+              {
+                "type": "button",
+                "text": {
+                  "type": "plain_text",
+                  "emoji": true,
+                  "text": "查看 PR 詳細內容"
+                },
+                "style": "primary",
+                "value": "https://www.freecodecamp.org/news/javascript-multiline-string-how-to-create-multi-line-strings-in-js/"
+              }
+            ]
+          }
+        ]
+      }
+
       core.info(slack_message)
-      const messageObject = formatSlackMessage(channel, slack_message);
+      const messageObject = formatSlackMessage(channel, slack_message, slack_block);
       const resNotification = await sendNotification(webhookUrl, messageObject);
-    }
       
     
 
