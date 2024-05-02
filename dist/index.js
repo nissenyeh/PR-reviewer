@@ -34282,9 +34282,9 @@ async function main() {
       } catch (error) {
         core.error('Open AI 失敗，請檢查並重新嘗試');
       }
-
-      // 獲取內容
       core.info(ai_suggestion)
+      // 獲取內容
+      core.info(`=========發送 slack 通知===============`);
 
       const prCreatedAt = new Date(pr.created_at);
       const currentTime = new Date();
@@ -34296,6 +34296,8 @@ async function main() {
       const prUpdatedAt = new Date(pr.updated_at);
       const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
 
+      const PR_message = `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
+      core.info(PR_message);
 //       const slack_message = `【PR巡警】這個 PR「${pr.title}」，已經開啟了 ${hoursOpen} hr ，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前 \n
 // *AI小警察介紹*：${ai_suggestion}\n
 // *PR連結*：${prLink}
@@ -34327,7 +34329,7 @@ async function main() {
                   },
                   {
                     "type": "text",
-                    "text": `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時，上次更新時間是 ${lastUpdatedHoursAgo} hr 以前`
+                    "text": PR_message
                   }
                 ]
               }
