@@ -34260,7 +34260,7 @@ async function main() {
       core.info(`prompt: ${prompt}`);
 
       const ai_response = getOpenAI(prompt)
-      core.info(`${ai_response}`)
+      core.info(`${ai_response.data.choices.message.content}`)
     }
 
     // 看差異
