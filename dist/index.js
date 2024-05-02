@@ -34219,6 +34219,21 @@ async function getOpenAI(prompt) {
   return axios(config);
 }
 
+/**
+ * Send notification to a channel
+ * @param {String} webhookUrl Webhook URL
+ * @param {String} messageData Message data object to send into the channel
+ * @return {Promise} Axios promise
+ */
+async function sendNotification(webhookUrl, messageData) {
+  return axios({
+    method: 'POST',
+    url: webhookUrl,
+    data: messageData,
+  });
+}
+
+
 async function getDiffContent(diffUrl) {
   try {
     return await axios({
@@ -34260,20 +34275,30 @@ async function main() {
       const ai_suggestion = ai_response.data.data.choices[0].message.content
 
       // 獲取內容
-      core.info(ai_suggestion)
+      // core.info(ai_suggestion)
 
       const prCreatedAt = new Date(pr.created_at);
       const currentTime = new Date();
       const timeDiff = Math.abs(currentTime - prCreatedAt);
       const hoursOpen = Math.floor((timeDiff / (1000 * 60 * 60)));
 
+      const prLink = pr.html_url;
+
       const slack_message = `
         這個 PR 已經 open ${hoursOpen} hr，徵求 Reviewer !
+        PR 連結：${prLink}
         (以下為 AI 建議）
         ${ai_suggestion}
       `
       
       core.info(slack_message)
+
+      const webhookUrl = core.getInput('webhook-url');
+      const channel = core.getInput('channel');
+
+      const messageObject = formatSlackMessage(channel, slack_message);
+      const resNotification = await sendNotification(webhookUrl, messageObject);
+
 
       // 串接到 slack
     }

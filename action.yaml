@@ -8,6 +8,13 @@ inputs:
     description: ''
     required: false
     default: ''
+  webhook-url:
+    description: 'Webhook URL'
+    required: true
+  channel:
+    description: 'Channel name'
+    required: false
+    default: '#general'
 runs:
   using: 'node20'
   main: 'dist/index.js'
