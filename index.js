@@ -23,7 +23,8 @@ const {
 const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_API_URL } = process.env;
 
 const AUTH_HEADER = {
-  Authorization: `token ${GITHUB_TOKEN}`,
+  Authorization: `Bearer ${GITHUB_TOKEN}`,
+  // Authorization: `token ${GITHUB_TOKEN}`,
 };
 const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
