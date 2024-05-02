@@ -122,17 +122,16 @@ async function getDiffContent(diffUrl) {
 async function main() {
   try {
     // 獲取開啟一段時間的 PR 
-    core.info('Starting...');
-    core.info('Getting open pull requests...');
     const openTime = core.getInput('open-time');
-    core.info('openTime...');
-    core.info(openTime);
     const pullRequests = await getOldPullRequests(openTime);
     for (const pr of pullRequests.data) {
+
+      // 獲取 Pull Request 標題與內容
 
       core.info(`Pull Request Title: ${pr.title}`);
       core.info(`Pull Request Body: ${pr.body}`);
     
+      // 制定 Prompt 內容
 
       const prompt = `請幫我根據這以下Github Pull Request 的標題與內容
       標題：${pr.title} 內容：${pr.body}
@@ -140,13 +139,26 @@ async function main() {
       2. 推薦可能適合審核的工程師（會感興趣的人）
       `
 
-      core.info(`prompt: ${prompt}`);
-      core.info(`========================`);
       const ai_response = await getOpenAI(prompt)
-      core.info(`${ai_response}`)
-      core.info(`${ai_response.data}`)
-      core.info(`${ai_response.data.data}`)
-      core.info(`${ai_response.data.data.choices[0].message.content}`)
+      const ai_suggestion = ai_response.data.data.choices[0].message.content
+
+      // 獲取內容
+      core.info(ai_suggestion)
+
+      const prCreatedAt = new Date(pr.created_at);
+      const currentTime = new Date();
+      const timeDiff = Math.abs(currentTime - prCreatedAt);
+      const hoursOpen = Math.floor((timeDiff / (1000 * 60 * 60)));
+
+      const slack_message = `
+        這個 PR 已經 open ${hoursOpen} hr，徵求 Reviewer !
+        (以下為 AI 建議）
+        ${ai_suggestion}
+      `
+      
+      core.info(ai_suggestion)
+
+      // 串接到 slack
     }
 
     // 看差異
