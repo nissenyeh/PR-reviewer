@@ -188,7 +188,7 @@ async function main() {
             }
           },
         ]
-        const messageObject_test = formatSlackMessage(channel, slack_block);
+        const messageObject_test = formatSlackMessage(channel, slack_block_test);
         const resNotification_test = await sendNotification(webhookUrl, messageObject);
 
         core.info(`準備發正式訊息`)
