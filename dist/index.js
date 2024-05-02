@@ -34269,9 +34269,9 @@ async function main() {
       // 制定 Prompt 內容
 
       const prompt = `請幫我根據這以下Github Pull Request 的標題與內容
-      標題：${pr.title} 內容：${pr.body}
+      標題：${pr.title} 內容：${pr.body}，用中文遵守以下格式，回答
       1. 簡單介紹 PR 內容
-      2. 推薦可能適合審核的工程師（會感興趣的人）
+      2. 推薦可能適合審核的工程師（什麼背景 / 興趣的人）
       `
 
       const ai_response = await getOpenAI(prompt)
