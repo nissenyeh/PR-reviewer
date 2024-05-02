@@ -61,7 +61,7 @@ async function getOldPullRequests(days) {
   });
 }
 
-async function getPullRequests(pull_number) {
+async function getPullRequest(pull_number) {
 
   const endpoint = SEARCH_ENDPOINT + '/' + pull_number
   return axios({
@@ -133,7 +133,7 @@ async function main() {
       // core.info(diffContent.data);
       PR_ID = pr.id
       core.info(`PR_ID: ${PR_ID}`);
-      const pull = await getOldPullRequests(PR_ID);
+      const pull = await getPullRequest(PR_ID);
       
       core.info(`get pull: ${pull}`)
     }

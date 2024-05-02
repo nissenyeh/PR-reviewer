@@ -33772,46 +33772,23 @@ var external_util_ = __nccwpck_require__(3837);
 
 
 async function execAsync(cmd, opts) {
-  const execAsyncFunc = external_util_.promisify(external_child_process_namespaceObject.exec)
+  const execAsyncFunc = util.promisify(exec)
   return await execAsyncFunc(cmd, opts)
 }
-;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/context.js
-class Context {
-    line = 1;
-    lines = [];
-    options = {
-        noPrefix: false,
-    };
-    constructor(diff, options) {
-        this.lines = diff.split('\n');
-        this.options.noPrefix = !!options?.noPrefix;
-    }
-    getCurLine() {
-        return this.lines[this.line - 1];
-    }
-    nextLine() {
-        this.line++;
-        return this.getCurLine();
-    }
-    isEof() {
-        return this.line > this.lines.length;
-    }
-}
-//# sourceMappingURL=context.js.map
 ;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/constants.js
-const LineType = {
+const constants_LineType = {
     Added: 'AddedLine',
     Deleted: 'DeletedLine',
     Unchanged: 'UnchangedLine',
     Message: 'MessageLine',
 };
-const FileType = {
+const constants_FileType = {
     Changed: 'ChangedFile',
     Added: 'AddedFile',
     Deleted: 'DeletedFile',
     Renamed: 'RenamedFile',
 };
-const ExtendedHeader = {
+const constants_ExtendedHeader = {
     Index: 'index',
     Old: 'old',
     Copy: 'copy',
@@ -33822,12 +33799,12 @@ const ExtendedHeader = {
     RenameFrom: 'rename from',
     RenameTo: 'rename to',
 };
-const ExtendedHeaderValues = Object.values(ExtendedHeader);
+const constants_ExtendedHeaderValues = Object.values(constants_ExtendedHeader);
 //# sourceMappingURL=constants.js.map
 ;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/parse-git-diff.js
 
 
-function parseGitDiff(diff, options) {
+function parse_git_diff_parseGitDiff(diff, options) {
     const ctx = new Context(diff, options);
     const files = parseFileChanges(ctx);
     return {
@@ -34064,10 +34041,10 @@ function parseMarker(context, marker) {
     return null;
 }
 const CHAR_TYPE_MAP = {
-    '+': LineType.Added,
-    '-': LineType.Deleted,
-    ' ': LineType.Unchanged,
-    '\\': LineType.Message,
+    '+': constants_LineType.Added,
+    '-': constants_LineType.Deleted,
+    ' ': constants_LineType.Unchanged,
+    '\\': constants_LineType.Message,
 };
 function parseChanges(ctx, rangeBefore, rangeAfter) {
     const changes = [];
@@ -34135,7 +34112,7 @@ function getFilePath(ctx, input, type) {
 //# sourceMappingURL=parse-git-diff.js.map
 ;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/index.js
 
-/* harmony default export */ const mjs = (parseGitDiff);
+/* harmony default export */ const mjs = ((/* unused pure expression or super */ null && (parseGitDiff)));
 //# sourceMappingURL=index.js.map
 ;// CONCATENATED MODULE: ./index.js
 
@@ -34201,6 +34178,16 @@ async function getOldPullRequests(days) {
   });
 }
 
+async function getPullRequest(pull_number) {
+
+  const endpoint = SEARCH_ENDPOINT + '/' + pull_number
+  return axios({
+    method: 'GET',
+    url: endpoint,
+    headers: AUTH_HEADER,
+  });
+}
+ 
 
 // call open AI
 
@@ -34261,24 +34248,11 @@ async function main() {
       core.info(`Pull Request Title: ${pr.title}`);
       // const diffContent = await getDiffContent(pr.diff_url)
       // core.info(diffContent.data);
-      const baseBranch = pr.base.ref
-      core.info(`baseBranch: ${baseBranch}`);
-
-      const searchPath = pr.head.ref
-      core.info(`searchPath: ${searchPath}`);
-
-      // --no-pager ensures that the git command does not use a pager (like less) to display the diff
-      const gitDiffCmd = `git --no-pager diff refs/remotes/origin/${baseBranch}...refs/remotes/origin/${searchPath}`
-      core.info(`running git diff command: ${gitDiffCmd}`)
-      const {stdout, stderr} = await execAsync(gitDiffCmd, {
-        maxBuffer: 1000000
-      })
-      const gitDiff = stdout
-
-      // JSON diff
-      const diff = mjs(gitDiff)
-      const jsonDiff = JSON.stringify(diff)
-      core.info(`running git diff command: ${jsonDiff}`)
+      PR_ID = pr.id
+      core.info(`PR_ID: ${PR_ID}`);
+      const pull = await getPullRequest(PR_ID);
+      
+      core.info(`get pull: ${pull}`)
     }
 
     // 看差異
