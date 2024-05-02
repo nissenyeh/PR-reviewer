@@ -34270,8 +34270,15 @@ async function main() {
       2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
       `
 
+      const ai_response_test = await getOpenAI("請說聲你好")
+      const ai_response_test_ok = ai_response_test.data.data.choices[0].message.content
+
+      core.info(ai_response_test_ok);
+
       const ai_response = await getOpenAI(prompt)
       const ai_suggestion = ai_response.data.data.choices[0].message.content
+
+      core.info(ai_suggestion);
 
       // 獲取內容
       // core.info(ai_suggestion)
