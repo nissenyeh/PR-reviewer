@@ -34304,20 +34304,44 @@ async function main() {
             }
           },
           {
-            "type": "section",
-            "fields": [
+            "type": "rich_text",
+            "elements": [
               {
-                "type": "mrkdwn",
-                "text": `*說明:*\n 此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時`
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "說明:",
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": `此 PR 「${pr.title}」已經開啟 ${hoursOpen}  小時`
+                  }
+                ]
               }
             ]
           },
           {
-            "type": "section",
-            "fields": [
+            "type": "rich_text",
+            "elements": [
               {
-                "type": "mrkdwn",
-                "text": `*AI 小警察介紹:* \n${ai_suggestion}\n ....`
+                "type": "rich_text_section",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "AI 小警察介紹:\n",
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": `${ai_suggestion}`
+                  }
+                ]
               }
             ]
           },
