@@ -199,7 +199,7 @@ async function main() {
             "fields": [
               {
                 "type": "mrkdwn",
-                "text": `*AI 小警察介紹:* ${ai_suggestion}\n ....`
+                "text": `*AI 小警察介紹:* \n${ai_suggestion}\n ....`
               }
             ]
           },
@@ -214,7 +214,7 @@ async function main() {
                   "text": "查看 PR 詳細內容"
                 },
                 "style": "primary",
-                "value": "https://www.freecodecamp.org/news/javascript-multiline-string-how-to-create-multi-line-strings-in-js/"
+                "url": prLink
               }
             ]
           }
