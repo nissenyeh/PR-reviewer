@@ -34137,7 +34137,9 @@ const {
 
 
 // fix: GITHUB_TOKEN 拿不到
-const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_API_URL } = process.env;
+const { GITHUB_TOKEN, GITHUB_API_URL } = process.env;
+
+const GITHUB_REPOSITORY = 'junyiacademy/junyiacademy'
 
 const AUTH_HEADER = {
   Authorization: `token ${GITHUB_TOKEN}`,
@@ -34233,19 +34235,6 @@ async function sendNotification(webhookUrl, messageData) {
   });
 }
 
-
-async function getDiffContent(diffUrl) {
-  try {
-    return await axios({
-      method: 'GET',
-      url: diffUrl,
-      headers: AUTH_HEADER
-    });
-  } catch (error) {
-    console.error('Error fetching diff content:', error);
-    return null;
-  }
-}
 
 
 /**
