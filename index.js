@@ -156,7 +156,7 @@ async function main() {
         ${ai_suggestion}
       `
       
-      core.info(ai_suggestion)
+      core.info(slack_message)
 
       // 串接到 slack
     }
