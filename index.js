@@ -180,8 +180,6 @@ async function main() {
       const lastUpdatedDaysAgo = Math.floor(lastUpdatedHoursAgo / 24);
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
-      const PR_message = `此 PR 「${pr.title}」已經存活 ${hoursOpen} 小時  ${daysOpenMessage} ，上次更新時間是 ${lastUpdatedHoursAgo} 小時 ${lastUpdatedDaysMessage}  以前`
-      core.info(PR_message);
       
       try {
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
@@ -191,7 +189,7 @@ async function main() {
               "type": "header",
               "text": {
                 "type": "plain_text",
-                "text": "PR 巡邏小警察",
+                "text": "【PR 巡邏小警察】",
                 "emoji": true
               }
             },
@@ -203,14 +201,14 @@ async function main() {
                   "elements": [
                     {
                       "type": "text",
-                      "text": "說明:\n",
+                      "text": "▌標題:\n",
                       "style": {
                         "bold": true
                       }
                     },
                     {
                       "type": "text",
-                      "text": PR_message
+                      "text": pr.title
                     }
                   ]
                 }
@@ -224,7 +222,70 @@ async function main() {
                   "elements": [
                     {
                       "type": "text",
-                      "text": "AI 小警察介紹:\n",
+                      "text": "▌PR 作者:\n",
+                      "style": {
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": pr.user.login
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "▌總計存活時間: \n",
+                      "style": {
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": `已經存活 ${hoursOpen} 小時${daysOpenMessage}`
+                    }
+                  ]
+                }
+              ]
+            }, 
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "▌上次更新時間: \n",
+                      "style": {
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": ` ${lastUpdatedHoursAgo} 小時 ${lastUpdatedDaysMessage} 以前`
+                    }
+                  ]
+                }
+              ]
+            },               
+            {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "▌AI 小警察介紹:\n",
                       "style": {
                         "bold": true
                       }
