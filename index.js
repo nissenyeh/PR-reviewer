@@ -134,12 +134,13 @@ async function main() {
 
 
       // 獲取 Pull Request 標題與內容
-
+      core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
       core.info(`Pull Request Body: ${pr.body}`);
     
       // 制定 Prompt 內容
 
+      core.info(`=========Open AI===============`);
       const prompt = `Github Pull Request 內容如下
       標題：${pr.title} 內容：${pr.body}
       -----
