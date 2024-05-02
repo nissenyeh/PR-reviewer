@@ -34250,15 +34250,15 @@ async function main() {
 
       core.info(`Pull Request Title: ${pr.title}`);
       core.info(`Pull Request Body: ${pr.body}`);
-      
-      core.info(`get pull: ${pull}`)
+    
 
       const prompt = 
       ```請幫我根據這以下Github Pull Request 的標題與內容
-      1. 簡述該 PR 內容
-      2. 描述可能適合審核的工程師
       標題：${pr.title}
       內容：${pr.body}
+      -----
+      1. 簡單介紹 PR 內容
+      2. 推薦可能適合審核的工程師（會感興趣的人）
       ```
       const ai_response = getOpenAI(prompt)
       core.info(`${ai_response}`)
