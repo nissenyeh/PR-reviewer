@@ -224,27 +224,7 @@ function generateSlackElement(type, value) {
 }
 
 
-function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, ai_suggestion) {
-  const prTitle = pr.title
-  const prLink = pr.html_url;
-  const prAuthor = pr.user.login
-
-
-  const messageTitle = '【PR 巡邏小警察】'
-  const messageContents = [
-    {title: `▌PR title (Author) : \n`},
-    {uelText:{
-      text: prTitle,
-      url:prLink
-    }},
-    {text: `(Create by @${prAuthor}) \n`},
-    {title: `▌總計存活時間: \n`},
-    {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage} \n`},
-    {title: `▌上次更新時間: \n`},
-    {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前 \n`},
-    {title: `▌AI 小警察介紹:\n`},
-    {text: ai_suggestion},
-  ]
+function formatSlackMessageBlock(messageTitle, messageContents) {
 
   const titleBlocks = generateSlackTitleBlock(messageTitle)
   const textBlocks = generateSlackRichTextBlock(messageContents)
@@ -254,7 +234,7 @@ function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHour
     textBlocks
   ]
 
-  return slack_block;
+  return slackBlock;
 }
 
 module.exports = {

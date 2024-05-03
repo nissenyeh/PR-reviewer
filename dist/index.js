@@ -230,27 +230,7 @@ function generateSlackElement(type, value) {
 }
 
 
-function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, ai_suggestion) {
-  const prTitle = pr.title
-  const prLink = pr.html_url;
-  const prAuthor = pr.user.login
-
-
-  const messageTitle = '【PR 巡邏小警察】'
-  const messageContents = [
-    {title: `▌PR title (Author) : \n`},
-    {uelText:{
-      text: prTitle,
-      url:prLink
-    }},
-    {text: `(Create by @${prAuthor}) \n`},
-    {title: `▌總計存活時間: \n`},
-    {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage} \n`},
-    {title: `▌上次更新時間: \n`},
-    {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前 \n`},
-    {title: `▌AI 小警察介紹:\n`},
-    {text: ai_suggestion},
-  ]
+function formatSlackMessageBlock(messageTitle, messageContents) {
 
   const titleBlocks = generateSlackTitleBlock(messageTitle)
   const textBlocks = generateSlackRichTextBlock(messageContents)
@@ -260,7 +240,7 @@ function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHour
     textBlocks
   ]
 
-  return slack_block;
+  return slackBlock;
 }
 
 module.exports = {
@@ -34201,6 +34181,7 @@ async function sendNotification(webhookUrl, messageData) {
 const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
 async function getOldPullRequests(hours) {
+  // 2024-05-02
   core.info(`getDateHoursAgo(hours): ${getDateHoursAgo(hours)}`);
   const query = `repo:${GITHUB_REPOSITORY} is:pr is:open updated:<${getDateHoursAgo(hours)}`;
   return axios({
@@ -34261,12 +34242,13 @@ async function main() {
       core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
       core.info(`Pull Request Body: ${pr.body}`);
+      core.info(`Pull Request Update time: ${pr.updated_at}`);
+      core.info(`Pull Request Create time: ${pr.created_at}`);
     
       // // 制定 Prompt 內容
       // core.info(`=========PR_BODY===============`);
       // const PR_BODY = pr.body
       const PR_BODY = pr.body.replace(/\n/g, ' ')
-      // core.info(PR_BODY);
 
       // open 時間
       const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
@@ -34308,7 +34290,26 @@ async function main() {
       try {
         core.info(`=========發送 slack 通知===============`);
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
-        const slackBlocks = formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, aiSuggestion)
+
+        
+        const messageTitle = '【PR 巡邏小警察】'
+        const messageContents = [
+          {title: `▌PR title (Author) : \n`}, 
+          {uelText:{
+            text:  pr.title,
+            url: pr.html_url
+          }},
+          {text: `(Create by @${pr.user.login}) \n`},
+          {title: `▌總計存活時間: \n`},
+          {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage} \n`},
+          {title: `▌上次更新時間: \n`},
+          {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前 \n`},
+          {title: `▌AI 小警察介紹:\n`},
+          {text: ai_suggestion},
+        ]
+
+
+        const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
         const messageObject = formatSlackMessage(channel, slackBlocks);
         const resNotification = await sendNotification(webhookUrl, messageObject);
       } catch (error) {
