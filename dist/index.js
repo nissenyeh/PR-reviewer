@@ -34298,16 +34298,17 @@ async function main() {
         core.info(`=========發送 slack 通知===============`);
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
 
-        
+        // example: 3. New: Add Reminder Action (@Nissen) was last updated 20 hours ago
         const messageReportContents = [
-          {text: index+1},
+          {text: `${index+1}・`},
           {uelText:{
             text:  pr.title,
             url: pr.html_url
           }},
           {text: `(@${pr.user.login}) `},
-          {text:`  was last updated ${lastUpdatedHoursAgo} ago \n`},
+          {text:`  was last updated ${lastUpdatedHoursAgo} hours ago \n`},
         ]
+        core.info(`index: ${index} `)
         reportPullRequest = reportPullRequest.concat(messageReportContents)
 
         
