@@ -34234,7 +34234,7 @@ async function main() {
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
-    const pullRequestExceedTimeCount = 0
+    let pullRequestExceedTimeCount = 0
 
     for (const pr of pullRequests.data) {
 
