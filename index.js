@@ -97,10 +97,12 @@ async function main() {
   try {
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
-    
     totalPullRequestCount = pullRequests.data.length
 
-    for (const pr of pullRequests.data) {
+    // 排序從小到大
+    const sortedPullRequests = pullRequests.data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    for (const pr of sortedPullRequests.data) {
 
       core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
