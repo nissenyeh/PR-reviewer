@@ -34296,7 +34296,7 @@ async function getOpenAI(prompt) {
     method: 'post',
     url: 'https://api.openai.com/v1/chat/completions',
     headers: { 
-      'Authorization':  `token ${OPEN_AI_API_TOKEN}`,
+      'Authorization':  `Bearer ${OPEN_AI_API_TOKEN}`,
       'Content-Type': 'application/json', 
     },
     data : data
@@ -34330,22 +34330,14 @@ async function main() {
       // core.info(PR_BODY);
 
       // open 時間
-      
       const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
-      core.info(`${pr.created_at}`);
-
-
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
+
       // 更新時間
       const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
       core.info(`${pr.title}  (Create by @${pr.user.login})`);
-
-      core.info(`hoursOpen: ${hoursOpen}`);
-      core.info(`daysOpenMessage: ${daysOpenMessage}`);
-      core.info(`daysOpen:${daysOpen}`);
-
       core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
       core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
 
