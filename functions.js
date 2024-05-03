@@ -153,7 +153,7 @@ function generateSlackRichTextBlock(messageContents){
   messageContents.map(block => {
     Object.entries(block).forEach(([key, value]) => {
       const slack_block = generateSlackElement(key,value)
-      elements.append(slack_block)
+      elements.push(slack_block);
     });
   });
 
