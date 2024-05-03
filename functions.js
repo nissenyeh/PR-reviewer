@@ -229,12 +229,12 @@ function formatSlackMessageBlock(messageTitle, messageContents) {
   const titleBlocks = generateSlackTitleBlock(messageTitle)
   const textBlocks = generateSlackRichTextBlock(messageContents)
 
-  let slack_block = [
+  let slackBlocks = [
     titleBlocks,
     textBlocks
   ]
 
-  return slackBlock;
+  return slackBlocks;
 }
 
 module.exports = {
