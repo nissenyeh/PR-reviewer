@@ -116,7 +116,7 @@ async function main() {
 
       // 更新時間
       const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
-      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
+      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''
 
       // 如果超過 X 小時則跳過
       core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`,)
@@ -156,18 +156,18 @@ async function main() {
       
       // 準備發送 slack message
       try {
-        core.info(`=========發送 slack 通知===============`);
+        core.info(`=========Send slack Message===============`);
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
 
-        // example: 3. New: Add Reminder Action (@Nissen) was last updated 20 hours ago
+        // example: 3. New: Add Reminder Action (@Nissen) was last updated 25 hours (1 Day) ago
         const messageReportContents = [
-          {text: `${index+1}・`},
+          {text: `${index+1}.`},
           {uelText:{
             text:  pr.title,
             url: pr.html_url
           }},
           {text: `(@${pr.user.login}) `},
-          {text:`  was last updated ${lastUpdatedHoursAgo} hours ago \n`},
+          {text:` has not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''} \n`},
         ]
         core.info(`index: ${index} `)
         reportPullRequest = reportPullRequest.concat(messageReportContents)
@@ -212,7 +212,7 @@ async function main() {
     const messageTitle = '【PR Report】'
     const messageContents = [
       {title: `▌Pull Request Statistics: \n`},
-      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have not been updated in the last ${PRLastUpdateTimeThreshold} hours. Continue to work hard, seek reviews, and consider closing.\n`},
+      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have not been updated in the last ${PRLastUpdateTimeThreshold} hours. They might be waiting for the next commit, a code review, or just be closed. Keep going! \n`},
       {title: `▌Pull Request Summary: \n`},
       ...reportPullRequest
     ]
