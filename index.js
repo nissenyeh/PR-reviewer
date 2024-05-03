@@ -34,11 +34,11 @@ const client = new WebClient(process.env.SLACK_TOKEN)
  * @return {Promise} Axios promise
  */
 
-async function sendSlackNotification(channelID) {
+async function sendSlackNotification(channelID, blocks) {
   core.info(`channelID: ${channelID}`);
   return await client.chat.postMessage({
     channel: channelID,
-    text: "Hello world"
+    blocks: blocks
   });
 }
 
@@ -50,12 +50,27 @@ async function sendSlackNotification(channelID) {
  * @param {String} messageData Message data object to send into the channel
  * @return {Promise} Axios promise
  */
-async function sendNotification(webhookUrl, messageData) {
-  return axios({
-    method: 'POST',
-    url: webhookUrl,
-    data: messageData,
-  });
+async function sendNotification(slackBlocks) {
+
+  const channelID = core.getInput('channel-id');
+  if(process.env.SLACK_TOKEN){
+    return await client.chat.postMessage({
+      channel: channelID,
+      blocks: slackBlocks
+    });
+  }
+
+  const webhookUrl = core.getInput('webhook-url');
+  const channelName = core.getInput('channel');
+
+  if(webhookUrl){
+    const messageObject = formatSlackMessage(channelName, slackBlocks);
+    return axios({
+      method: 'POST',
+      url: webhookUrl,
+      data: messageData,
+    });
+  } 
 }
 
 
@@ -206,14 +221,13 @@ async function main() {
           {boldText: `▌Created at : \n`},
           {text:`${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`},
           {boldText: `▌Updated at: \n`},
-          {text:`${pr.updated_at} - has not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''} \n`},
+          {text:`${pr.updated_at} - not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? ` (${lastUpdatedDaysAgo} day)` : ''} \n`},
           {boldText: `▌ PR introduction (Powered By OpenAI):\n`},
           {text: aiSuggestion},
         ]
 
         const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
-        const messageObject = formatSlackMessage(channel, slackBlocks);
-        const resNotification = await sendNotification(webhookUrl, messageObject);
+        const resNotification = await sendNotification(slackBlocks);
       } catch (error) {
         core.error(error)
         core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
@@ -236,13 +250,13 @@ async function main() {
       {boldText: `▌Pull Request Statistics: \n`},
       {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have`},
       {boldText:`not been updated in the last ${PRLastUpdateTimeThreshold} hours.`},
-      {boldText:`They might be waiting for the next commit, a code review, or just be closed. Keep going! \n`},
+      {text:`They might be waiting for the next commit, a code review, or just be closed. Keep going! \n\n`},
       {boldText: `▌Pull Request Summary: \n`},
       ...reportPullRequest
     ]
     const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
-    const messageObject = formatSlackMessage(channel, slackBlocks);
-    const resNotification = await sendNotification(webhookUrl, messageObject);
+    const resNotification = await sendNotification(slackBlocks);
+    
   } catch (error) {
     core.error(error)
     core.error('發送 Slack 通知失敗，請檢查並重新嘗試');

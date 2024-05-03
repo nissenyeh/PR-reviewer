@@ -68,3 +68,27 @@ https://api.slack.com/apps
 
 3. OAuth Scope - chose chat:write
 
+4. app install
+
+5. /invite @appName
+
+you may meet 
+
+```
+Error: An API error occurred: not_in_channel
+    at Object.platformErrorFromResult (/home/runner/work/_actions/nissenyeh/PR-reviewer/main/dist/index.js:2717:33)
+    at WebClient.apiCall (/home/runner/work/_actions/nissenyeh/PR-reviewer/main/dist/index.js:2359:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async sendSlackNotification (/home/runner/work/_actions/nissenyeh/PR-reviewer/main/dist/index.js:39806:10) {
+  code: 'slack_webapi_platform_error',
+  data: {
+    ok: false,
+    error: 'not_in_channel',
+    response_metadata: {
+      scopes: [ 'incoming-webhook', 'chat:write' ],
+      acceptedScopes: [ 'chat:write' ]
+    }
+  }
+}
+```
+
