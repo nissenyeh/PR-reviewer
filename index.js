@@ -75,18 +75,16 @@ async function getOpenAI(prompt) {
   const { API_TOKEN } = process.env;
 
   var data = JSON.stringify({
-    "data": {
-      "messages": [
-        {
-          "role": "user",
-          "content": prompt
-        }
-      ],
-      "max_tokens": 512,
-      "temperature": 0.9,
-      "model": "gpt-3.5-turbo",
-      "stream": false
-    }
+    "messages": [
+      {
+        "role": "user",
+        "content": prompt
+      }
+    ],
+    "max_tokens": 512,
+    "temperature": 0.9,
+    "model": "gpt-3.5-turbo",
+    "stream": false
   });
   var config = {
     method: 'post',
