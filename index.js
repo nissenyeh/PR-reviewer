@@ -27,22 +27,6 @@ const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 const client = new WebClient(process.env.SLACK_TOKEN)
 
 
-/**
- * Send notification to a channel
- * @param {String} webhookUrl Webhook URL
- * @param {String} messageData Message data object to send into the channel
- * @return {Promise} Axios promise
- */
-
-async function sendSlackNotification(channelID, blocks) {
-  core.info(`channelID: ${channelID}`);
-  return await client.chat.postMessage({
-    channel: channelID,
-    blocks: blocks
-  });
-}
-
-
 
 /**
  * Send notification to a channel
@@ -131,7 +115,6 @@ async function main() {
   let reportPullRequest = []
 
   try {
-    sendSlackNotification(channelID)
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = pullRequests.data.length
