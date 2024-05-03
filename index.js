@@ -91,7 +91,7 @@ async function main() {
     const channel = core.getInput('channel');
     const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
 
-    core.info('pr-last-updated-time-exceeding-x-hours',PRLastUpdateTimeThreshold)
+    core.info(`pr-last-updated-time-exceeding-x-hours: ${PRLastUpdateTimeThreshold}`)
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
@@ -113,8 +113,8 @@ async function main() {
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
       // 如果超過 X 小時則跳過
-      core.info('PRLastUpdateTimeThreshold',PRLastUpdateTimeThreshold)
-      core.info('lastUpdatedHoursAgo',lastUpdatedHoursAgo)
+      core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`,)
+      core.info(`lastUpdatedHoursAgo:${lastUpdatedHoursAgo}`)
       if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
         continue
       }
