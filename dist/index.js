@@ -39803,6 +39803,7 @@ const client = new WebClient(process.env.SLACK_TOKEN)
  */
 
 async function sendSlackNotification(channelID) {
+  core.info(`channelID: ${channelID}`);
   return await client.chat.postMessage({
     channel: channelID,
     text: "Hello world"
