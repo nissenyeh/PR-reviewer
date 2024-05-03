@@ -34295,7 +34295,7 @@ async function getOpenAI(prompt) {
     method: 'post',
     url: 'https://api.openai.com/v1/chat/completions',
     headers: { 
-      'Authorization':  `token ${API_TOKEN}`,
+      'Authorization':  `token ${OPEN_AI_API_TOKEN}`,
       'Content-Type': 'application/json', 
     },
     data : data
