@@ -34239,9 +34239,9 @@ async function main() {
     totalPullRequestCount = pullRequests.data.length
 
     // 排序從小到大
-    const sortedPullRequests = pullRequests.data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    const sortedPullRequests = pullRequests.data.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
 
-    for (const pr of sortedPullRequests) {
+    for (const [index , pr] of sortedPullRequests.entries()) {
 
       core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
@@ -34300,12 +34300,13 @@ async function main() {
 
         
         const messageReportContents = [
+          {text: index+1},
           {uelText:{
             text:  pr.title,
             url: pr.html_url
           }},
-          {text: `(Create by @${pr.user.login}) `},
-          {text:` ${lastUpdatedHoursAgo} 小時以前更新 \n`},
+          {text: `(@${pr.user.login}) `},
+          {text:`  was last updated ${lastUpdatedHoursAgo} ago \n`},
         ]
         reportPullRequest = reportPullRequest.concat(messageReportContents)
 
@@ -34346,12 +34347,11 @@ async function main() {
   // 準備發送 slack message
   try {
     core.info(`=========發送 slack 報告===============`);
-    
-    const messageTitle = '【PR 報告】'
+    const messageTitle = '【PR Report】'
     const messageContents = [
-      {title: `▌統計報告: \n`},
-      {text:`有 ${pullRequestExceedTimeCount} 個 PR （ 總計 ${totalPullRequestCount} ）已經 ${PRLastUpdateTimeThreshold} 小時尚未更新，可以持續加油、徵求 Review、考慮關閉\n`},
-      {title: `▌簡單報告: \n`},
+      {title: `▌Pull Request Statistics: \n`},
+      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have not been updated in the last ${PRLastUpdateTimeThreshold} hours. Continue to work hard, seek reviews, and consider closing.\n`},
+      {title: `▌Pull Request Summary: \n`},
       ...reportPullRequest
     ]
     const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
