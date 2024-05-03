@@ -111,8 +111,7 @@ async function main() {
       
       const { hoursOpen , daysOpen } = calculateTmeDifference(pr.created_at);
       core.info(`${pr.created_at}`);
-      core.info(`${hoursOpen}`);
-      core.info(`${daysOpen}`);
+
 
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
       // 更新時間
@@ -120,6 +119,11 @@ async function main() {
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
       core.info(`${pr.title}  (Create by @${pr.user.login})`);
+
+      core.info(`hoursOpen: ${hoursOpen}`);
+      core.info(`daysOpenMessage: ${daysOpenMessage}`);
+      core.info(`daysOpen:${daysOpen}`);
+      
       core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
       core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
 
