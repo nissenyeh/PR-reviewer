@@ -34234,6 +34234,7 @@ async function main() {
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
+    const pullRequestExceedTimeCount = 0
 
     for (const pr of pullRequests.data) {
 
@@ -34257,6 +34258,8 @@ async function main() {
       if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
         continue
       }
+      
+      pullRequestExceedTimeCount += 1;
       
       core.info(`${pr.title}  (Create by @${pr.user.login})`);
       core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
@@ -34323,6 +34326,26 @@ async function main() {
     core.info(error);
     core.setFailed(error.message);
   }
+
+  // 準備發送 slack message
+  try {
+    core.info(`=========發送 slack 報告===============`);
+    
+    const messageTitle = '【PR 報告】'
+    const messageContents = [
+      {title: `▌統計報告: \n`},
+      {text:`有 ${pullRequestExceedTimeCount} 個 PR （ 總計 ${pullRequests.data.length} ）已經 ${PRLastUpdateTimeThreshold} 小時尚未更新，請考慮關閉、徵求 Review、持續努力\n`},
+    ]
+
+    const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
+    const messageObject = formatSlackMessage(channel, slackBlocks);
+    const resNotification = await sendNotification(webhookUrl, messageObject);
+  } catch (error) {
+    core.error(error)
+    core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
+  }
+
+
 }
 
 main();
