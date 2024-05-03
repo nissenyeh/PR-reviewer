@@ -268,10 +268,6 @@ function calculateTmeDifference(time){
   const timeDiff = Math.abs(currentDate - timeDate);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)));
   const days = Math.floor(hours / 24);
-  core.info(timeDate);
-  core.info(currentDate);
-  core.info(hours);
-  core.info(days);
   return { hours, days };
 }
 
@@ -34335,13 +34331,13 @@ async function main() {
 
       // open 時間
       
-      const { hoursOpen , daysOpen } = calculateTmeDifference(pr.created_at);
+      const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
       core.info(`${pr.created_at}`);
 
 
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
       // 更新時間
-      const { lastUpdatedHoursAgo , lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
+      const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
       core.info(`${pr.title}  (Create by @${pr.user.login})`);
@@ -34349,7 +34345,7 @@ async function main() {
       core.info(`hoursOpen: ${hoursOpen}`);
       core.info(`daysOpenMessage: ${daysOpenMessage}`);
       core.info(`daysOpen:${daysOpen}`);
-      
+
       core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
       core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
 
