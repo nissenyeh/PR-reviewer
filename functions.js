@@ -84,70 +84,6 @@ function stringToObject(str) {
   return map;
 }
 
-/**
- * Create a pretty message to print
- * @param {Array} pr2user Array of Object with these properties { url, title, login }
- * @param {Object} github2provider Object containing usernames as properties and IDs as values
- * @param {String} provider Service to use: slack or msteams
- * @return {String} Pretty message to print
- */
-function prettyMessage(pr2user, github2provider, provider) {
-  let message = '';
-  for (const obj of pr2user) {
-    switch (provider) {
-      case 'slack': {
-        const mention = github2provider[obj.login] ?
-          `<@${github2provider[obj.login]}>` :
-          `@${obj.login}`;
-        message += `Hey ${mention}, the PR "${obj.title}" is waiting for your review: ${obj.url}\n`;
-        break;
-      }
-      case 'rocket': {
-        const mention = github2provider[obj.login] ?
-                `<@${github2provider[obj.login]}>` :
-                `@${obj.login}`;
-        message += `Hey ${mention}, the PR "${obj.title}" is waiting for your review: ${obj.url}\n`;
-        break;
-      }
-      case 'msteams': {
-        const mention = github2provider[obj.login] ?
-          `<at>${obj.login}</at>` :
-          `@${obj.login}`;
-        message += `Hey ${mention}, the PR "${obj.title}" is waiting for your review: [${obj.url}](${obj.url})  \n`;
-        break;
-      }
-    }
-  }
-  return message;
-}
-
-/**
- * Create an array of MS teams mention objects for users requested in a review
- * Docs: https://bit.ly/3UlOoqo
- * @param {Object} github2provider Object containing usernames as properties and IDs as values
- * @param {Array} pr2user Array of Object with these properties { url, title, login }
- * @return {Array} MS teams mention objects
- */
-function getTeamsMentions(github2provider, pr2user) {
-  const mentions = [];
-  // Add mentions array only if the map is provided, or no notification is sent
-  if (Object.keys(github2provider).length > 0) {
-    for (const user of pr2user) {
-      // mentioed property needs id and name, or no notification is sent
-      if (github2provider[user.login]) {
-        mentions.push({
-          type: `mention`,
-          text: `<at>${user.login}</at>`,
-          mentioned: {
-            id: github2provider[user.login],
-            name: user.login,
-          },
-        });
-      }
-    }
-  }
-  return mentions;
-}
 
 /**
  * Formats channel and slack message text into a request object
@@ -161,21 +97,6 @@ function formatSlackMessage(channel, blocks) {
     username: 'Pull Request reviews reminder',
     text: '測試訊息',
     blocks: blocks
-  };
-  return messageData;
-}
-
-/**
- * Formats channel and rocket message text into a request object
- * @param {String} channel channel to send the message to
- * @param {String} message rocket message text
- * @return {Object} rocket message data object
- */
-function formatRocketMessage(channel, message, block) {
-  const messageData = {
-    channel: channel,
-    username: 'Pull Request reviews reminder',
-    text: message,
   };
   return messageData;
 }
@@ -223,30 +144,44 @@ function getDateHoursAgo(hours) {
 }
 
 
-function generateSlackText(title,text){
+
+
+function generateSlackRichTextBlock(messageContents){
+
+  let elements = []
+
+  messageContents.map(block => {
+    Object.entries(block).forEach(([key, value]) => {
+      const slack_block = generateSlackElement(key,value)
+      elements.append(slack_block)
+    });
+  });
+
   slackText = {
     "type": "rich_text",
     "elements": [
       {
         "type": "rich_text_section",
-        "elements": [
-          {
-            "type": "text",
-            "text": title,
-            "style": {
-              "bold": true
-            }
-          },
-          {
-            "type": "text",
-            "text": text
-          }
-        ]
+        "elements": elements
       }
     ]
   }
   return slackText
 }
+
+function generateSlackTitleBlock(title){
+  slackText = {
+    "type": "header",
+    "text": {
+      "type": "plain_text",
+      "text": title,
+      "emoji": true
+    }
+  }
+  return slackText
+}
+
+
 
 // 6/3 ~ 6/7 
 
@@ -265,54 +200,59 @@ function calculateTmeDifference(time){
   return { hours, days };
 }
 
+function generateSlackElement(type, value) {
+  if (type === 'title') {
+    return {
+      "type": "text",
+      "text": value,
+      "style": {
+        "bold": true
+      }
+    }
+  } else if (type === 'text') {
+    return {
+      "type": "text",
+      "text": value,
+    }
+  } else if (type === 'uelText') {
+    return {
+      "type": "link",
+      "text": value['text'],
+      "url": value['url']
+    }
+  }
+}
+
+
 function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, ai_suggestion) {
   const prTitle = pr.title
-  const prAuthor = pr.user.login
   const prLink = pr.html_url;
+  const prAuthor = pr.user.login
+
 
   const messageTitle = '【PR 巡邏小警察】'
+  const messageContents = [
+    {title: `▌PR title (Author) : \n`},
+    {uelText:{
+      text: prTitle,
+      url:prLink
+    }},
+    {text: `(Create by @${prAuthor})`},
+    {title: `▌總計存活時間: \n`},
+    {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage}`},
+    {title: `▌上次更新時間: \n`},
+    {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`},
+    {title: `▌AI 小警察介紹:\n`},
+    {text: ai_suggestion},
+  ]
 
-  const title1 =  `▌PR title (Author) : \n`
-  const text1 =  `${prTitle}  (Create by @${prAuthor})`
+  const titleBlocks = generateSlackTitleBlock(messageTitle)
+  const textBlocks = generateSlackRichTextBlock(messageContents)
 
-  const title2 =  `▌總計存活時間: \n`
-  const text2 =  `已經存活 ${hoursOpen} 小時${daysOpenMessage}`
-
-  const title3 =  `▌上次更新時間: \n`
-  const text3 =  `已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
-
-  const title4 =  `▌AI 小警察介紹:\n`
-  const text4 = ai_suggestion
-
-  const slack_block =  [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": messageTitle,
-          "emoji": true
-        }
-      },
-      generateSlackText(title1,text1),
-      generateSlackText(title2,text2),
-      generateSlackText(title3,text3),     
-      generateSlackText(title4,text4),           
-      {
-        "type": "actions",
-        "elements": [
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "emoji": true,
-              "text": "查看 PR 詳細內容"
-            },
-            "style": "primary",
-            "url": prLink
-          }
-        ]
-      }
-  ];
+  let slack_block = [
+    titleBlocks,
+    textBlocks
+  ]
 
   return slack_block;
 }
@@ -324,10 +264,7 @@ module.exports = {
   createPr2UserArray,
   checkGithubProviderFormat,
   stringToObject,
-  prettyMessage,
-  getTeamsMentions,
   formatTeamsMessage,
-  formatRocketMessage,
   formatSlackMessage,
   calculateTmeDifference,
   formatSlackMessageBlock,

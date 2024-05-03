@@ -4,10 +4,6 @@ branding:
   icon: 'bell'
   color: 'red'
 inputs:
-  open-time:
-    description: ''
-    required: false
-    default: ''
   webhook-url: 
     description: 'Slack Webhook URL'
     required: true
