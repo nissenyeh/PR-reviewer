@@ -166,7 +166,7 @@ async function main() {
           {text: `(Create by @${pr.user.login}) `},
           {text:` ${lastUpdatedHoursAgo} 小時以前更新 \n`},
         ]
-        reportPullRequest.push(messageReportContents)
+        reportPullRequest = reportPullRequest.concat(messageReportContents)
 
         
         const messageTitle = '【PR 巡邏小警察】'
