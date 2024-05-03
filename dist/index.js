@@ -34224,6 +34224,8 @@ async function getOpenAI(prompt) {
  * Main function for the GitHub Action
  */
 async function main() {
+  let pullRequestExceedTimeCount = 0
+
   try {
     // 獲取開啟一段時間的 PR 
     const webhookUrl = core.getInput('webhook-url');
@@ -34234,7 +34236,7 @@ async function main() {
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
-    let pullRequestExceedTimeCount = 0
+    
 
     for (const pr of pullRequests.data) {
 
@@ -34336,7 +34338,6 @@ async function main() {
       {title: `▌統計報告: \n`},
       {text:`有 ${pullRequestExceedTimeCount} 個 PR （ 總計 ${pullRequests.data.length} ）已經 ${PRLastUpdateTimeThreshold} 小時尚未更新，請考慮關閉、徵求 Review、持續努力\n`},
     ]
-
     const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
     const messageObject = formatSlackMessage(channel, slackBlocks);
     const resNotification = await sendNotification(webhookUrl, messageObject);
