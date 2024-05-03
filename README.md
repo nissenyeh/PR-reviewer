@@ -72,6 +72,7 @@ https://api.slack.com/apps
 
 5. /invite @appName
 
+
 you may meet 
 
 ```
@@ -91,4 +92,9 @@ Error: An API error occurred: not_in_channel
   }
 }
 ```
+
+
+## AI
+
+- OAuth Scope - chose `chat:write` `channels:history`
 

@@ -27,15 +27,6 @@ const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 const client = new WebClient(process.env.SLACK_TOKEN)
 
 
-async function replySlackThread(threadNumber,slackBlocks) {
-  const channelID = core.getInput('channel-id');
-    return await client.conversations.replies({
-      channel: channelID,
-      ts: threadNumber,
-      blocks: slackBlocks
-    });
-}
-
 
 /**
  * Send notification to a channel
@@ -43,12 +34,13 @@ async function replySlackThread(threadNumber,slackBlocks) {
  * @param {String} messageData Message data object to send into the channel
  * @return {Promise} Axios promise
  */
-async function sendNotification(slackBlocks) {
+async function sendNotification(slackBlocks, threadNumber = null) {
 
   const channelID = core.getInput('channel-id');
   if(process.env.SLACK_TOKEN){
     return await client.chat.postMessage({
       channel: channelID,
+      thread_ts: threadNumber,
       blocks: slackBlocks
     });
   }
@@ -263,15 +255,12 @@ async function main() {
     const threadNumber = resNotification['ts']
     core.info(`threadNumber:${threadNumber}`)
 
+    for (const prDetailBlock of pullRequestDetailReport) {
+      core.info(`prDetailBlock:${prDetailBlock}`)
+      await sendNotification(prDetailBlock, threadNumber);
 
-  for (const prDetailBlock of pullRequestDetailReport) {
-    core.info(`prDetailBlock:${prDetailBlock}`)
-    await replySlackThread(threadNumber, prDetailBlock);
-
-  }
+    }
     
-
-
     
   } catch (error) {
     core.error(error)
