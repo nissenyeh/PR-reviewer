@@ -108,7 +108,12 @@ async function main() {
       // core.info(PR_BODY);
 
       // open 時間
+      
       const { hoursOpen , daysOpen } = calculateTmeDifference(pr.created_at);
+      core.info(`${pr.created_at}`);
+      core.info(`${hoursOpen}`);
+      core.info(`${daysOpen}`);
+
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
       // 更新時間
       const { lastUpdatedHoursAgo , lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)

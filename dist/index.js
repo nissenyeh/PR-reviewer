@@ -2,7 +2,7 @@
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 3505:
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /**
  * Filter Pull Requests with requested reviewers only
@@ -256,6 +256,7 @@ function generateSlackText(title,text){
 
 // 6/3 ~ 6/7 
 
+const core = __nccwpck_require__(2186);
 /**
  * 計算時間差異
  * @param {String} time 時間
@@ -267,6 +268,10 @@ function calculateTmeDifference(time){
   const timeDiff = Math.abs(currentDate - timeDate);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)));
   const days = Math.floor(hours / 24);
+  core.info(timeDate);
+  core.info(currentDate);
+  core.info(hours);
+  core.info(days);
   return { hours, days };
 }
 
@@ -34329,7 +34334,12 @@ async function main() {
       // core.info(PR_BODY);
 
       // open 時間
+      
       const { hoursOpen , daysOpen } = calculateTmeDifference(pr.created_at);
+      core.info(`${pr.created_at}`);
+      core.info(`${hoursOpen}`);
+      core.info(`${daysOpen}`);
+
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
       // 更新時間
       const { lastUpdatedHoursAgo , lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)

@@ -250,6 +250,7 @@ function generateSlackText(title,text){
 
 // 6/3 ~ 6/7 
 
+const core = require('@actions/core');
 /**
  * 計算時間差異
  * @param {String} time 時間
@@ -261,6 +262,10 @@ function calculateTmeDifference(time){
   const timeDiff = Math.abs(currentDate - timeDate);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)));
   const days = Math.floor(hours / 24);
+  core.info(timeDate);
+  core.info(currentDate);
+  core.info(hours);
+  core.info(days);
   return { hours, days };
 }
 
