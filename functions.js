@@ -201,7 +201,7 @@ function calculateTmeDifference(time){
 }
 
 function generateSlackElement(type, value) {
-  if (type === 'title') {
+  if (type === 'boldText') {
     return {
       "type": "text",
       "text": value,

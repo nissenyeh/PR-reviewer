@@ -52,3 +52,19 @@ https://junyiacademy.slack.com/account/settings#username
 ## 如何獲取 OPENAI_TOKEN
 
 https://platform.openai.com/api-keys
+
+
+# slack
+
+channelId
+
+slack token
+
+https://api.slack.com/apps
+
+1. Features - OAuth & Permissions
+
+2. Scopes -  Add an OAuth Scope
+
+3. OAuth Scope - chose chat:write
+

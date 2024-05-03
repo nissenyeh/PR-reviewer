@@ -207,7 +207,7 @@ function calculateTmeDifference(time){
 }
 
 function generateSlackElement(type, value) {
-  if (type === 'title') {
+  if (type === 'boldText') {
     return {
       "type": "text",
       "text": value,
@@ -27502,6 +27502,14 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 3194:
+/***/ ((module) => {
+
+module.exports = eval("require")("@slack/web-api");
+
+
+/***/ }),
+
 /***/ 9975:
 /***/ ((module) => {
 
@@ -34139,7 +34147,8 @@ function getFilePath(ctx, input, type) {
 ;// CONCATENATED MODULE: ./index.js
 
 const core = __nccwpck_require__(2186);
-
+const { WebClient } = __nccwpck_require__(3194)
+;
 
 const axios = __nccwpck_require__(8757);
 
@@ -34160,6 +34169,24 @@ const AUTH_HEADER = {
   Authorization: `token ${GITHUB_TOKEN}`,
 };
 const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
+
+
+const client = new WebClient(process.env.SLACK_TOKEN)
+
+
+/**
+ * Send notification to a channel
+ * @param {String} webhookUrl Webhook URL
+ * @param {String} messageData Message data object to send into the channel
+ * @return {Promise} Axios promise
+ */
+
+async function sendSlackNotification(channelID) {
+  return await client.chat.postMessage({
+    channel: channelId,
+    text: "Hello world"
+  });
+}
 
 
 
@@ -34227,6 +34254,7 @@ async function main() {
   
   const webhookUrl = core.getInput('webhook-url');
   const channel = core.getInput('channel');
+  const channelID = core.getInput('channel-id');
   const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
 
   let totalPullRequestCount = 0
@@ -34234,6 +34262,7 @@ async function main() {
   let reportPullRequest = []
 
   try {
+    sendSlackNotification(channelID)
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = pullRequests.data.length
@@ -34251,7 +34280,7 @@ async function main() {
 
       // 開啟時間
       const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
-      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
+      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} day)` : ''
 
       // 更新時間
       const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
@@ -34300,7 +34329,7 @@ async function main() {
 
         // example: 3. New: Add Reminder Action (@Nissen) was last updated 25 hours (1 Day) ago
         const messageReportContents = [
-          {text: `${index+1}.`},
+          {text: `${index+1}. `},
           {uelText:{
             text:  pr.title,
             url: pr.html_url
@@ -34311,20 +34340,20 @@ async function main() {
         core.info(`index: ${index} `)
         reportPullRequest = reportPullRequest.concat(messageReportContents)
 
-        
-        const messageTitle = '【PR 巡邏小警察】'
+        // const createdAtMessage = `${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`
+        const messageTitle = '【PR Patrol Report】'
         const messageContents = [
-          {title: `▌PR title (Author) : \n`}, 
+          {boldText: `▌PR title (Author) : \n`}, 
           {uelText:{
             text:  pr.title,
             url: pr.html_url
           }},
           {text: `(Create by @${pr.user.login}) \n`},
-          {title: `▌總計存活時間: \n`},
-          {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage} \n`},
-          {title: `▌上次更新時間: \n`},
-          {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前 \n`},
-          {title: `▌AI 小警察介紹:\n`},
+          {boldText: `▌Created at : \n`},
+          {text:`${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`},
+          {boldText: `▌Updated at: \n`},
+          {text:`${pr.updated_at} - has not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''} \n`},
+          {boldText: `▌ PR introduction (Powered By OpenAI):\n`},
           {text: aiSuggestion},
         ]
 
@@ -34350,9 +34379,11 @@ async function main() {
     core.info(`=========發送 slack 報告===============`);
     const messageTitle = '【PR Report】'
     const messageContents = [
-      {title: `▌Pull Request Statistics: \n`},
-      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have not been updated in the last ${PRLastUpdateTimeThreshold} hours. They might be waiting for the next commit, a code review, or just be closed. Keep going! \n`},
-      {title: `▌Pull Request Summary: \n`},
+      {boldText: `▌Pull Request Statistics: \n`},
+      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have`},
+      {boldText:`not been updated in the last ${PRLastUpdateTimeThreshold} hours.`},
+      {boldText:`They might be waiting for the next commit, a code review, or just be closed. Keep going! \n`},
+      {boldText: `▌Pull Request Summary: \n`},
       ...reportPullRequest
     ]
     const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
