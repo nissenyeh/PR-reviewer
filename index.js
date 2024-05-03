@@ -36,7 +36,7 @@ const client = new WebClient(process.env.SLACK_TOKEN)
 
 async function sendSlackNotification(channelID) {
   return await client.chat.postMessage({
-    channel: channelId,
+    channel: channelID,
     text: "Hello world"
   });
 }
