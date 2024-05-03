@@ -41,10 +41,8 @@ async function sendNotification(webhookUrl, messageData) {
 
 const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
-async function getOldPullRequests(hours) {
-  // 2024-05-02
-  core.info(`getDateHoursAgo(hours): ${getDateHoursAgo(hours)}`);
-  const query = `repo:${GITHUB_REPOSITORY} is:pr is:open updated:<${getDateHoursAgo(hours)}`;
+async function getAllOpenPullRequests() {
+  const query = `repo:${GITHUB_REPOSITORY} is:pr is:open`;
   return axios({
     method: 'GET',
     url: SEARCH_ENDPOINT,
@@ -93,10 +91,10 @@ async function main() {
     const channel = core.getInput('channel');
     const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
 
-    core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`);
+    
 
      // 獲取 Pull Request 標題與內容
-    const pullRequests = await getOldPullRequests(PRLastUpdateTimeThreshold);
+    const pullRequests = await getAllOpenPullRequests();
 
     for (const pr of pullRequests.data) {
 
@@ -105,13 +103,8 @@ async function main() {
       core.info(`Pull Request Body: ${pr.body}`);
       core.info(`Pull Request Update time: ${pr.updated_at}`);
       core.info(`Pull Request Create time: ${pr.created_at}`);
-    
-      // // 制定 Prompt 內容
-      // core.info(`=========PR_BODY===============`);
-      // const PR_BODY = pr.body
-      const PR_BODY = pr.body.replace(/\n/g, ' ')
 
-      // open 時間
+      // 開啟時間
       const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
       const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
 
@@ -119,16 +112,19 @@ async function main() {
       const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
+      if (hoursOpen <= PRLastUpdateTimeThreshold){
+        continue
+      }
+      
       core.info(`${pr.title}  (Create by @${pr.user.login})`);
       core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
       core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
 
       // 生成 AI 建議
       let aiSuggestion = ''
-
       try {
-        
         core.info(`=========call open ai===============`);
+        const PR_BODY = pr.body.replace(/\n/g, ' ')
         const prompt = `Github Pull Request 內容如下
         標題：${pr.title} 內容：${PR_BODY}
         -----
@@ -146,8 +142,8 @@ async function main() {
         core.error('Open AI 失敗，請檢查並重新嘗試');
       }
       core.info(aiSuggestion)
-      // 獲取內容
       
+      // 準備發送 slack message
       try {
         core.info(`=========發送 slack 通知===============`);
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
@@ -168,7 +164,6 @@ async function main() {
           {title: `▌AI 小警察介紹:\n`},
           {text: ai_suggestion},
         ]
-
 
         const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
         const messageObject = formatSlackMessage(channel, slackBlocks);
