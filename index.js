@@ -42,7 +42,7 @@ async function sendNotification(webhookUrl, messageData) {
 const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
 async function getOldPullRequests(hours) {
-
+  core.info(`getDateHoursAgo(hours): ${getDateHoursAgo(hours)}`);
   const query = `repo:${GITHUB_REPOSITORY} is:pr is:open updated:<${getDateHoursAgo(hours)}`;
   return axios({
     method: 'GET',
@@ -91,6 +91,8 @@ async function main() {
     const webhookUrl = core.getInput('webhook-url');
     const channel = core.getInput('channel');
     const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
+
+    core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`);
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getOldPullRequests(PRLastUpdateTimeThreshold);
