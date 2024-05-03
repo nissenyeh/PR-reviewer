@@ -112,7 +112,10 @@ async function main() {
       const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
       const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
 
-      if (hoursOpen <= PRLastUpdateTimeThreshold){
+      // 如果超過 X 小時則跳過
+      core.info('PRLastUpdateTimeThreshold',PRLastUpdateTimeThreshold)
+      core.info('lastUpdatedHoursAgo',lastUpdatedHoursAgo)
+      if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
         continue
       }
       
