@@ -27,6 +27,15 @@ const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 const client = new WebClient(process.env.SLACK_TOKEN)
 
 
+async function replySlackThread(threadNumber,slackBlocks) {
+  const channelID = core.getInput('channel-id');
+    return await client.conversations.replies({
+      channel: channelID,
+      ts: threadNumber,
+      blocks: slackBlocks
+    });
+}
+
 
 /**
  * Send notification to a channel
@@ -113,6 +122,7 @@ async function main() {
   let totalPullRequestCount = 0
   let pullRequestExceedTimeCount = 0
   let reportPullRequest = []
+  let pullRequestDetailReport = []
 
   try {
      // 獲取 Pull Request 標題與內容
@@ -193,8 +203,8 @@ async function main() {
         reportPullRequest = reportPullRequest.concat(messageReportContents)
 
         // const createdAtMessage = `${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`
-        const messageTitle = '【PR Patrol Report】'
-        const messageContents = [
+        const prDetailReportTitle = '【PR Patrol Report】'
+        const prDetailReportContent = [
           {boldText: `▌PR title (Author) : \n`}, 
           {uelText:{
             text:  pr.title,
@@ -209,8 +219,9 @@ async function main() {
           {text: aiSuggestion},
         ]
 
-        const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
-        const resNotification = await sendNotification(slackBlocks);
+        const slackBlocks = formatSlackMessageBlock(prDetailReportTitle, prDetailReportContent)
+        pullRequestDetailReport = pullRequestDetailReport.concat(slackBlocks)
+
       } catch (error) {
         core.error(error)
         core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
@@ -227,9 +238,9 @@ async function main() {
 
   // 準備發送 slack message
   try {
-    core.info(`=========發送 slack 報告===============`);
-    const messageTitle = '【PR Report】'
-    const messageContents = [
+    core.info(`=========Send slack PR report===============`);
+    const prReportTitle = '【PR Report】'
+    const prReportContents = [
       {boldText: `▌Pull Request Statistics: \n`},
       {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have`},
       {boldText:`not been updated in the last ${PRLastUpdateTimeThreshold} hours.`},
@@ -237,8 +248,30 @@ async function main() {
       {boldText: `▌Pull Request Summary: \n`},
       ...reportPullRequest
     ]
-    const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
-    const resNotification = await sendNotification(slackBlocks);
+    const slackBlocks = formatSlackMessageBlock(prReportTitle, prReportContents)
+    await sendNotification(slackBlocks);
+
+
+    core.info(`=========Send slack PR detail ===============`);
+    const messageTitle = '【PR Detail】'
+    const messageContents = [
+      {text:`Detail will be in threads`},
+    ]
+    const threadBlocks = formatSlackMessageBlock(messageTitle, messageContents)
+    const resNotification = await sendNotification(threadBlocks);
+    core.info(`resNotification:${resNotification}`)
+    const threadNumber = resNotification['ts']
+    core.info(`threadNumber:${threadNumber}`)
+
+
+  for (const prDetailBlock of pullRequestDetailReport) {
+    core.info(`prDetailBlock:${prDetailBlock}`)
+    await replySlackThread(threadNumber, prDetailBlock);
+
+  }
+    
+
+
     
   } catch (error) {
     core.error(error)
