@@ -34324,6 +34324,7 @@ async function main() {
     
       // // 制定 Prompt 內容
       // core.info(`=========PR_BODY===============`);
+      const PR_BODY = pr.body
       // const PR_BODY = pr.body.replace(/\n/g, ' ')
       // core.info(PR_BODY);
 
