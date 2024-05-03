@@ -5,12 +5,10 @@ import parseGitDiff from 'parse-git-diff'
 const axios = require('axios');
 
 const {
-  createPr2UserArray,
-  checkGithubProviderFormat,
-  prettyMessage,
-  stringToObject,
-  getTeamsMentions,
+  formatSlackMessageBlock,
   formatSlackMessage,
+  getDateHoursAgo,
+  calculateTmeDifference,
 } = require('./functions');
 
 
@@ -25,29 +23,27 @@ const AUTH_HEADER = {
 const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
 
+
 /**
- * Get Pull Requests from GitHub repository
+ * Send notification to a channel
+ * @param {String} webhookUrl Webhook URL
+ * @param {String} messageData Message data object to send into the channel
  * @return {Promise} Axios promise
  */
-async function getPullRequests() {
+async function sendNotification(webhookUrl, messageData) {
   return axios({
-    method: 'GET',
-    url: PULLS_ENDPOINT,
-    headers: AUTH_HEADER,
+    method: 'POST',
+    url: webhookUrl,
+    data: messageData,
   });
 }
 
-function getDateXDaysAgo(days) {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return date.toISOString().split('T')[0]; // 返回格式為 YYYY-MM-DD
-}
 
 const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
-async function getOldPullRequests(days) {
+async function getOldPullRequests(hours) {
 
-  const query = `repo:${GITHUB_REPOSITORY} is:pr is:open created:<${getDateXDaysAgo(days)}`;
+  const query = `repo:${GITHUB_REPOSITORY} is:pr is:open updated:<${getDateHoursAgo(hours)}`;
   return axios({
     method: 'GET',
     url: SEARCH_ENDPOINT,
@@ -58,21 +54,9 @@ async function getOldPullRequests(days) {
   });
 }
 
-async function getPullRequest(pull_number) {
-
-  const endpoint = SEARCH_ENDPOINT + '/' + pull_number
-  return axios({
-    method: 'GET',
-    url: endpoint,
-    headers: AUTH_HEADER,
-  });
-}
- 
-
 // call open AI
-
 async function getOpenAI(prompt) {
-  const { API_TOKEN } = process.env;
+  const { OPEN_AI_API_TOKEN } = process.env;
 
   var data = JSON.stringify({
     "messages": [
@@ -99,22 +83,6 @@ async function getOpenAI(prompt) {
 }
 
 /**
- * Send notification to a channel
- * @param {String} webhookUrl Webhook URL
- * @param {String} messageData Message data object to send into the channel
- * @return {Promise} Axios promise
- */
-async function sendNotification(webhookUrl, messageData) {
-  return axios({
-    method: 'POST',
-    url: webhookUrl,
-    data: messageData,
-  });
-}
-
-
-
-/**
  * Main function for the GitHub Action
  */
 async function main() {
@@ -122,25 +90,39 @@ async function main() {
     // 獲取開啟一段時間的 PR 
     const webhookUrl = core.getInput('webhook-url');
     const channel = core.getInput('channel');
-    const openTime = core.getInput('open-time');
-    const pullRequests = await getOldPullRequests(openTime);
+    const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
+
+     // 獲取 Pull Request 標題與內容
+    const pullRequests = await getOldPullRequests(PRLastUpdateTimeThreshold);
+
     for (const pr of pullRequests.data) {
 
-
-      // 獲取 Pull Request 標題與內容
       core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
       core.info(`Pull Request Body: ${pr.body}`);
     
-      // 制定 Prompt 內容
-      core.info(`=========PR_BODY===============`);
-      const PR_BODY = pr.body.replace(/\n/g, ' ')
-      core.info(PR_BODY);
-      
-      let ai_suggestion = '本次沒有生成 AI 建議'
+      // // 制定 Prompt 內容
+      // core.info(`=========PR_BODY===============`);
+      // const PR_BODY = pr.body.replace(/\n/g, ' ')
+      // core.info(PR_BODY);
+
+      // open 時間
+      const { hoursOpen , daysOpen } = calculateTmeDifference(pr.created_at);
+      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
+      // 更新時間
+      const { lastUpdatedHoursAgo , lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
+      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
+
+      core.info(`${pr.title}  (Create by @${pr.user.login})`);
+      core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
+      core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
+
+      // 生成 AI 建議
+      let aiSuggestion = ''
 
       try {
-        core.info(`=========Open AI===============`);
+        
+        core.info(`=========call open ai===============`);
         const prompt = `Github Pull Request 內容如下
         標題：${pr.title} 內容：${PR_BODY}
         -----
@@ -148,153 +130,23 @@ async function main() {
         1. 簡單介紹 PR 內容
         2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
         `
-      
         //  這邊可以調整一下，如果 fail 送提醒就好
         const ai_response = await getOpenAI(prompt)
-        ai_suggestion = ai_response.data.data.choices[0].message.content
-  
+        aiSuggestion = ai_response.data.data.choices[0].message.content
         core.info(ai_suggestion);
       } catch (error) {
+        aiSuggestion = '本次沒有生成 AI 建議'
         core.error(error)
         core.error('Open AI 失敗，請檢查並重新嘗試');
       }
-      core.info(ai_suggestion)
+      core.info(aiSuggestion)
       // 獲取內容
-      core.info(`=========發送 slack 通知===============`);
-      const prLink = pr.html_url;
-
-
-
-      // 存活時間
-      const prCreatedAt = new Date(pr.created_at);
-      const currentTime = new Date();
-      const timeDiff = Math.abs(currentTime - prCreatedAt);
-      const hoursOpen = Math.floor((timeDiff / (1000 * 60 * 60)));
-      const daysOpen = Math.floor(hoursOpen / 24);
-      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} 天)` : ''
-
-      // 上次更新時間
-      const prUpdatedAt = new Date(pr.updated_at);
-      const lastUpdatedHoursAgo = Math.floor((currentTime - prUpdatedAt) / (1000 * 60 * 60));
-      const lastUpdatedDaysAgo = Math.floor(lastUpdatedHoursAgo / 24);
-      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} 天)` : ''
-
       
       try {
+        core.info(`=========發送 slack 通知===============`);
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
-
-        const slack_block =  [
-            {
-              "type": "header",
-              "text": {
-                "type": "plain_text",
-                "text": "【PR 巡邏小警察】",
-                "emoji": true
-              }
-            },
-            {
-              "type": "rich_text",
-              "elements": [
-                {
-                  "type": "rich_text_section",
-                  "elements": [
-                    {
-                      "type": "text",
-                      "text": `▌ PR title (Author) : \n`,
-                      "style": {
-                        "bold": true
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "text": `${pr.title}  (Create by @${pr.user.login})`
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "rich_text",
-              "elements": [
-                {
-                  "type": "rich_text_section",
-                  "elements": [
-                    {
-                      "type": "text",
-                      "text": "▌總計存活時間: \n",
-                      "style": {
-                        "bold": true
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "text": `已經存活 ${hoursOpen} 小時${daysOpenMessage}`
-                    }
-                  ]
-                }
-              ]
-            }, 
-            {
-              "type": "rich_text",
-              "elements": [
-                {
-                  "type": "rich_text_section",
-                  "elements": [
-                    {
-                      "type": "text",
-                      "text": "▌上次更新時間: \n",
-                      "style": {
-                        "bold": true
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "text": `已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
-                    }
-                  ]
-                }
-              ]
-            },               
-            {
-              "type": "rich_text",
-              "elements": [
-                {
-                  "type": "rich_text_section",
-                  "elements": [
-                    {
-                      "type": "text",
-                      "text": "▌AI 小警察介紹:\n",
-                      "style": {
-                        "bold": true
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "text": `${ai_suggestion}`
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "actions",
-              "elements": [
-                {
-                  "type": "button",
-                  "text": {
-                    "type": "plain_text",
-                    "emoji": true,
-                    "text": "查看 PR 詳細內容"
-                  },
-                  "style": "primary",
-                  "url": prLink
-                }
-              ]
-            }
-        ]
-
-
-        const messageObject = formatSlackMessage(channel, slack_block);
+        const slackBlocks = formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, aiSuggestion)
+        const messageObject = formatSlackMessage(channel, slackBlocks);
         const resNotification = await sendNotification(webhookUrl, messageObject);
       } catch (error) {
         core.error(error)

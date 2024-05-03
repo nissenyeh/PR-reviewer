@@ -216,6 +216,106 @@ function formatTeamsMessage(message, mentionsArray = []) {
   return messageData;
 }
 
+function getDateHoursAgo(hours) {
+  const date = new Date();
+  date.setHours(date.getHours() - hours);
+  return date.toISOString().split('T')[0]; // 返回格式為 YYYY-MM-DD
+}
+
+
+function generateSlackText(title,text){
+  slackText = {
+    "type": "rich_text",
+    "elements": [
+      {
+        "type": "rich_text_section",
+        "elements": [
+          {
+            "type": "text",
+            "text": title,
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "text",
+            "text": text
+          }
+        ]
+      }
+    ]
+  }
+  return slackText
+}
+
+// 6/3 ~ 6/7 
+
+/**
+ * 計算時間差異
+ * @param {String} time 時間
+ * @return {Object} 包含小時和天數的物件
+ */
+function calculateTmeDifference(time){
+  const timeDate = new Date(time);
+  const currentDate = new Date(); 
+  const timeDiff = Math.abs(currentDate - timeDate);
+  const hours = Math.floor((timeDiff / (1000 * 60 * 60)));
+  const days = Math.floor(hours / 24);
+  return { hours, days };
+}
+
+function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHoursAgo, lastUpdatedDaysMessage, ai_suggestion) {
+  const prTitle = pr.title
+  const prAuthor = pr.user.login
+  const prLink = pr.html_url;
+
+  const messageTitle = '【PR 巡邏小警察】'
+
+  const title1 =  `▌PR title (Author) : \n`
+  const text1 =  `${prTitle}  (Create by @${prAuthor})`
+
+  const title2 =  `▌總計存活時間: \n`
+  const text2 =  `已經存活 ${hoursOpen} 小時${daysOpenMessage}`
+
+  const title3 =  `▌上次更新時間: \n`
+  const text3 =  `已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
+
+  const title4 =  `▌AI 小警察介紹:\n`
+  const text4 = ai_suggestion
+
+  const slack_block =  [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": messageTitle,
+          "emoji": true
+        }
+      },
+      generateSlackText(title1,text1),
+      generateSlackText(title2,text2),
+      generateSlackText(title3,text3),     
+      generateSlackText(title4,text4),           
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "emoji": true,
+              "text": "查看 PR 詳細內容"
+            },
+            "style": "primary",
+            "url": prLink
+          }
+        ]
+      }
+  ];
+
+  return slack_block;
+}
+
 module.exports = {
   getPullRequestsToReview,
   getPullRequestsWithoutLabel,
@@ -228,4 +328,7 @@ module.exports = {
   formatTeamsMessage,
   formatRocketMessage,
   formatSlackMessage,
+  calculateTmeDifference,
+  formatSlackMessageBlock,
+  getDateHoursAgo
 };
