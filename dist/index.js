@@ -39979,7 +39979,7 @@ async function main() {
           {text: aiSuggestion},
         ]
 
-        const slackBlocks = formatSlackMessageBlock(prDetailReportTitle, prDetailReportContent)
+        const slackBlocks = [formatSlackMessageBlock(prDetailReportTitle, prDetailReportContent) ] 
         pullRequestDetailReport = pullRequestDetailReport.concat(slackBlocks)
 
       } catch (error) {
