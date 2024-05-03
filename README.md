@@ -22,6 +22,7 @@ jobs:
         uses: nissenyeh/PR-reviewer@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # or personal token
+          OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
         with:
           open-time: 0 # Required
           webhook-url: 'https://hooks.slack.com/services/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' # Required
@@ -47,3 +48,7 @@ https://api.slack.com/apps?new_app=1
 5. 在設置 webhook 過程中，將會獲得一個 webhook URL，這個 URL 就是你需要填寫到相應的地方。
 
 https://junyiacademy.slack.com/account/settings#username
+
+## 如何獲取 OPENAI_TOKEN
+
+https://platform.openai.com/api-keys

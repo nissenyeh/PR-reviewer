@@ -8,11 +8,11 @@ inputs:
     description: ''
     required: false
     default: ''
-  webhook-url:
-    description: 'Webhook URL'
+  webhook-url: 
+    description: 'Slack Webhook URL'
     required: true
   channel:
-    description: 'Channel name'
+    description: 'Slack Channel name'
     required: false
     default: '#general'
 runs:

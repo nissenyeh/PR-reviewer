@@ -72,6 +72,8 @@ async function getPullRequest(pull_number) {
 // call open AI
 
 async function getOpenAI(prompt) {
+  const { API_TOKEN } = process.env;
+
   var data = JSON.stringify({
     "data": {
       "messages": [
@@ -88,11 +90,10 @@ async function getOpenAI(prompt) {
   });
   var config = {
     method: 'post',
-    url: 'https://ci-live-feat-video-ai-dot-junyiacademy.appspot.com/api/v2/jutor/hf-chat',
+    url: 'https://api.openai.com/v1/chat/completions',
     headers: { 
-      'x-api-key': 'b4c318b8d6f770e10163436e0e868b806f50f34ae57f378e78956fb76b41fd27', 
+      'Authorization':  `token ${API_TOKEN}`,
       'Content-Type': 'application/json', 
-      'Cookie': 'fkey=1.0_hWjFLoxRNhhpww%3D%3D_1714508852'
     },
     data : data
   };
@@ -201,14 +202,14 @@ async function main() {
                   "elements": [
                     {
                       "type": "text",
-                      "text": `▌ 標題 / 作者 : \n`,
+                      "text": `▌ PR title (Author) : \n`,
                       "style": {
                         "bold": true
                       }
                     },
                     {
                       "type": "text",
-                      "text": `${pr.title} / ${pr.user.login}`
+                      "text": `${pr.title}  (Create by @${pr.user.login})`
                     }
                   ]
                 }
@@ -250,7 +251,7 @@ async function main() {
                     },
                     {
                       "type": "text",
-                      "text": `${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
+                      "text": `已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`
                     }
                   ]
                 }
