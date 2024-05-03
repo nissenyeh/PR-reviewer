@@ -239,9 +239,9 @@ function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHour
     }},
     {text: `(Create by @${prAuthor}) \n`},
     {title: `▌總計存活時間: \n`},
-    {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage}`},
+    {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage} \n`},
     {title: `▌上次更新時間: \n`},
-    {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`},
+    {text:`已經是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前 \n`},
     {title: `▌AI 小警察介紹:\n`},
     {text: ai_suggestion},
   ]
