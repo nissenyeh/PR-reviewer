@@ -92,6 +92,7 @@ async function main() {
 
   let totalPullRequestCount = 0
   let pullRequestExceedTimeCount = 0
+  let reportPullRequest = []
 
   try {
      // 獲取 Pull Request 標題與內容
@@ -157,6 +158,17 @@ async function main() {
         core.info(`ready to send message to ${webhookUrl} and ${channel}`)
 
         
+        const messageReportContents = [
+          {uelText:{
+            text:  pr.title,
+            url: pr.html_url
+          }},
+          {text: `(Create by @${pr.user.login}) `},
+          {text:` ${lastUpdatedHoursAgo} 小時以前更新 \n`},
+        ]
+        reportPullRequest.push(messageReportContents)
+
+        
         const messageTitle = '【PR 巡邏小警察】'
         const messageContents = [
           {title: `▌PR title (Author) : \n`}, 
@@ -197,7 +209,9 @@ async function main() {
     const messageTitle = '【PR 報告】'
     const messageContents = [
       {title: `▌統計報告: \n`},
-      {text:`有 ${pullRequestExceedTimeCount} 個 PR （ 總計 ${totalPullRequestCount} ）已經 ${PRLastUpdateTimeThreshold} 小時尚未更新，請考慮關閉、徵求 Review、持續努力\n`},
+      {text:`有 ${pullRequestExceedTimeCount} 個 PR （ 總計 ${totalPullRequestCount} ）已經 ${PRLastUpdateTimeThreshold} 小時尚未更新，可以持續加油、徵求 Review、考慮關閉\n`},
+      {title: `▌簡單報告: \n`},
+      ...reportPullRequest
     ]
     const slackBlocks = formatSlackMessageBlock(messageTitle, messageContents)
     const messageObject = formatSlackMessage(channel, slackBlocks);
