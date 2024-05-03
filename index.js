@@ -135,7 +135,7 @@ async function main() {
         //  這邊可以調整一下，如果 fail 送提醒就好
         const ai_response = await getOpenAI(prompt)
         aiSuggestion = ai_response.data.choices[0].message.content
-        core.info(ai_suggestion);
+        core.info(aiSuggestion);
       } catch (error) {
         aiSuggestion = '本次沒有生成 AI 建議'
         core.error(error)
