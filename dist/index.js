@@ -34230,7 +34230,7 @@ async function main() {
     const channel = core.getInput('channel');
     const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
 
-    
+    core.info('pr-last-updated-time-exceeding-x-hours',PRLastUpdateTimeThreshold)
 
      // 獲取 Pull Request 標題與內容
     const pullRequests = await getAllOpenPullRequests();
