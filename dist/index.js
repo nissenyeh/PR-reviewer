@@ -34241,7 +34241,7 @@ async function main() {
     // 排序從小到大
     const sortedPullRequests = pullRequests.data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
-    for (const pr of sortedPullRequests.data) {
+    for (const pr of sortedPullRequests) {
 
       core.info(`==========Fetch Pull Request==============`);
       core.info(`Pull Request Title: ${pr.title}`);
