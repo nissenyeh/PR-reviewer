@@ -237,7 +237,7 @@ function formatSlackMessageBlock(pr, hoursOpen, daysOpenMessage, lastUpdatedHour
       text: prTitle,
       url:prLink
     }},
-    {text: `(Create by @${prAuthor})`},
+    {text: `(Create by @${prAuthor}) \n`},
     {title: `▌總計存活時間: \n`},
     {text:`已經存活 ${hoursOpen} 小時${daysOpenMessage}`},
     {title: `▌上次更新時間: \n`},
