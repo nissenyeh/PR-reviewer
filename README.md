@@ -1,9 +1,20 @@
 # PR-reviwer
 
 
-# Why
+## Why
 
-- notify 
+- A PR life cycle: open -> code change -> code review -> close
+- Using visualized data to accelerate the PR lifecycle
+
+## What
+
+1. Notify when all PR that **have not been updated** in the last X hours, ensuring **accelerated progress** towards the next commit, code review, and closure."
+
+![Alt text](<CleanShot 2024-05-12 at 23.12.15@2x.png>)
+
+
+2. Generate PR introduction by AI , ensure people know how to help each others
+![Alt text](<CleanShot 2024-05-12 at 23.12.46@2x.png>)
 
 ## Sample Usage 
 
@@ -25,12 +36,11 @@ jobs:
         uses: nissenyeh/PR-reviewer@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # or Your personal token
-          OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
-          SLACK_TOKEN: <<SLACK_TOKEN >>
+          SLACK_TOKEN: << SLACK_TOKEN >>
+          OPEN_AI_API_TOKEN: ${{ secrets.OPENAI_TOKEN }}
         with:
-          webhook-url: 'https://hooks.slack.com/services/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' # Required
-          slack-channel-name: '#nissen測試' # Optional, eg: #general
-
+          NOTIFY_WHEN_PR_LAST_UPDATED_TIME_EXCEEDING_X_HOURS: 24 
+          SLACK_CHANNEL_ID:  <<SLACK_CHANNEL_ID>> # e.g : C04RX9CXKA4
 ```
 
 ## Env
@@ -38,7 +48,6 @@ jobs:
 ### How to get GITHUB_TOKEN
 
 1. Use `Github token ${{ secrets.GITHUB_TOKEN }}`
-
 
 If you use  `${{ secrets.GITHUB_TOKEN }}`, GitHub will `automatically` creates a unique GITHUB_TOKEN in workflow job (So you don't have to get anything from it)
  (Please refer to https://docs.github.com/en/actions/security-guides/automatic-token-authentication)
@@ -49,10 +58,6 @@ If you use  `${{ secrets.GITHUB_TOKEN }}`, GitHub will `automatically` creates a
 - Github Profile - Developer Setting: https://github.com/settings/apps
 
 - Personal access tokens -  Generate new token - Pull requests (Access: Read-only)
-
-## How to get OPENAI_TOKEN
-
-- https://platform.openai.com/api-keys
 
 
 ## How to Get SLACK TOKEN & Install Slack Bot in Channel
@@ -116,17 +121,15 @@ Error: An API error occurred: not_in_channel
 ```
 
 
-## 想法
+## How to get OPENAI_TOKEN
 
-1. 統計＋AI
+- https://platform.openai.com/api-keys
 
-- slack token 
-- 支援 thread 的回覆
 
-2. 統計
 
-- slack webhook
 
+
+-----
 
 # Slack
 
@@ -149,34 +152,3 @@ https://api.slack.com/apps?new_app=1
 
 https://junyiacademy.slack.com/account/settings#username
 
-
-## 如何獲取 Slack Token
-
-channelId
-
-slack token
-
-
-
-## 如何獲取 OPENAI_TOKEN
-
-
-
-
-
-## AI
-
-- OAuth Scope - chose `chat:write` `channels:history`
-
-
-## 心得
-
-1. 黏在目標上：第一個做這個專案時，我覺得很開心
-  - 學到如何寫 github Action 
-  - 開始會有很多想法：現在統計 PR ，那接下來可以用 github commit
-
-2. 盡快 release，不然這個想法會死掉
-
-3. 願景的重要性
-
-- 

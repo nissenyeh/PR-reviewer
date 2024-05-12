@@ -11,10 +11,8 @@ const {
 } = require('./functions');
 
 
-
 async function getAllOpenPullRequests() {
-  const { GITHUB_API_URL, GITHUB_TOKEN } = process.env;
-  const GITHUB_REPOSITORY = 'junyiacademy/junyiacademy'
+  const { GITHUB_API_URL, GITHUB_TOKEN, GITHUB_REPOSITORY } = process.env;
   const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
   const AUTH_HEADER = {
     Authorization: `token ${GITHUB_TOKEN}`,
@@ -46,7 +44,7 @@ async function sendNotification(slackBlocks, threadNumber = null) {
 
   // notify bt slack webhookUrl
   const slackWebhookUrl = core.getInput('SLACK_WEBHOOK_URL');
-  const slackChannelName = core.getInput('SLACK_CHANNEL_NAME');
+  const slackChannelName = core.getInput('SLACK_WEBHOOK_URL_CHANNEL_NAME');
   if(slackWebhookUrl){
     const messageObject = formatSlackMessage(slackChannelName, slackBlocks);
     return axios({
@@ -88,7 +86,7 @@ async function getOpenAI(prompt, token) {
  */
 async function main() {
 
-  const PRLastUpdateTimeThreshold = core.getInput('PR-LAST-UPDATED-TIME-EXCEEDING-X-HOURS');  
+  const PRLastUpdateTimeThreshold = core.getInput('NOTIFY_WHEN_PR_LAST_UPDATED_TIME_EXCEEDING_X_HOURS');  
   const lang = core.getInput('LANG');
 
   let allPullRequests=[]

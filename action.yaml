@@ -4,21 +4,25 @@ branding:
   icon: 'bell'
   color: 'red'
 inputs:
-  pr-last-updated-time-exceeding-x-hours: # optional
+  NOTIFY_WHEN_PR_LAST_UPDATED_TIME_EXCEEDING_X_HOURS: # optional
     description: 'fetch Pull Requests with last updated time exceeding X hours'
     required: false
-    default: '0' # default get all open Pull Requests
-  slack-channel-name: 
-    description: 'Slack Channel name'
-    required: true
-    default: '#general'
-  slack-webhook-url:  #  only if no slack token
-    description: 'Slack Webhook URL'
+    default: '0'
+  SLACK_CHANNEL_ID: 
+    description: 'Slack Channel ID (e.g: C04XU9CXKA4)'
     required: false
-  ai-language:
-    description: 'lang'
+  LANG:
+    description: 'language'
     required: false
     default: 'en'
+  SLACK_WEBHOOK_URL_CHANNEL_NAME: 
+    description: 'Slack Channel name'
+    required: false
+    default: '#general'
+  SLACK_WEBHOOK_URL: 
+    description: 'Slack Webhook URL'
+    required: false
+
 
 runs:
   using: 'node20'
