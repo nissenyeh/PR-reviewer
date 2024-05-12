@@ -13,6 +13,7 @@ const {
 
 async function getAllOpenPullRequests() {
   const { GITHUB_API_URL, GITHUB_TOKEN, GITHUB_REPOSITORY } = process.env;
+  core.info(`GITHUB_REPOSITORY:${GITHUB_REPOSITORY}`);
   const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
   const AUTH_HEADER = {
     Authorization: `token ${GITHUB_TOKEN}`,
