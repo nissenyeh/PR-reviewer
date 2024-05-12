@@ -39486,11 +39486,6 @@ async function getOpenAI(prompt, token) {
   return axios(config);
 }
 
-const langDict = {
-  'en': 'English',
-  'zh': 'Chinese' 
-}
-
 /**
  * Main function for the GitHub Action
  */
@@ -39572,10 +39567,14 @@ async function main() {
 
       core.info(`Strate generating AI introduction for Pull Request`);
       const PR_BODY = pr.body.replace(/\n/g, ' ')
+      const langDict = {
+        'en': 'English',
+        'zh': 'Chinese' 
+      }
       const prompt = `Github Pull Request content is as follows
       title：${pr.title} content：${PR_BODY}
       -----
-      Please, based on the title and content above, answer in ${langDict(lang)} following the format below:
+      Please, based on the title and content above, answer in ${langDict[lang]} following the format below:
       1. Briefly introduce the content of the PR.
       2. Recommend what type of engineer should review it (what background/interests they should have).
       `
