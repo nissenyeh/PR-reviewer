@@ -15,8 +15,8 @@ inputs:
     description: 'language'
     required: false
     default: 'en'
-  SPECIFIC_GITHUB_REPOSITORY
-    description: 'fetch specific github repository'
+  SPECIFIC_GITHUB_REPOSITORY:
+    description: 'fetch specific github repository (default fetch the github repo thatjob is running in)'
     required: false
   SLACK_WEBHOOK_URL_CHANNEL_NAME: 
     description: 'Slack Channel name'
