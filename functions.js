@@ -224,6 +224,8 @@ function generateSlackElement(type, value) {
 }
 
 
+
+
 function formatSlackMessageBlock(messageTitle, messageContents) {
 
   const titleBlocks = generateSlackTitleBlock(messageTitle)
