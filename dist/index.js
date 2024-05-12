@@ -39502,7 +39502,7 @@ async function main() {
   let pullRequestIntroductionsByAI = []
 
   try {  // Get all Pull Request 
-    core.info(`====== Start to fetch Pull request by Github API ======`);
+    core.info(`1. Start to fetch Pull request by Github API`);
     allPullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = allPullRequests.data.length
   } catch (error) {
@@ -39514,7 +39514,7 @@ async function main() {
 
   for (const [index , pr] of sortedPullRequests.entries()) {
 
-    core.info(`===========(${index}/${sortedPullRequests.length})==============`);
+    core.info(`===========[${index+1}/${sortedPullRequests.length}]===========`);
     core.info(`PR Title: ${pr.title}  (Create by @${pr.user.login})`);
     core.info(`PR Update time: ${pr.updated_at}`);
     core.info(`PR Create time: ${pr.created_at}`);
@@ -39564,8 +39564,6 @@ async function main() {
         core.info(`Skip to generate AI introduction for Pull Request due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN"`);
         continue
       }
-
-      core.info(`Strate generating AI introduction for Pull Request`);
       const PR_BODY = pr.body.replace(/\n/g, ' ')
       const langDict = {
         'en': 'English',
@@ -39580,6 +39578,7 @@ async function main() {
       `
       const aiResponse = await getOpenAI(prompt, process.env.OPEN_AI_API_TOKEN)
       const aiSuggestion = aiResponse.data.choices[0].message.content
+      core.info(`PR AI Suggestion:  ${aiSuggestion}`);
 
 
       const prDetailReportTitle = '【PR Patrol Report】'
@@ -39627,7 +39626,6 @@ async function main() {
     ]
     const slackBlocks = formatSlackMessageBlock(prReportTitle, prReportContents)
     await sendNotification(slackBlocks);
-    core.info(`A "PR statistics report" is sent`);
 
   } catch (error) {
     core.error(error)
@@ -39655,7 +39653,7 @@ async function main() {
       core.info(`Skip sending "Pull Request Detail Summary" due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`);
       return 
     }
-    core.info(`============== 2. Start sending "Pull Request Detail Summary" to slack channel==============`);
+    core.info(`2. Start sending "Pull Request Detail Summary" to slack channel`);
 
     const messageTitle = '【Pull Request Detail Summary】'
     const messageContents = [
@@ -39665,10 +39663,10 @@ async function main() {
     const resNotification = await sendNotification(threadBlocks);
     const threadNumber = resNotification['ts'] // slack thread number
 
-    core.info(`============== Start to reply PR introductions to slack thread ============== `);
+    core.info(`3. Start to reply PR introductions to slack thread`);
     for (const [index, prDetailBlock] of pullRequestIntroductionsByAI.entries()) {
       await sendNotification(prDetailBlock, threadNumber);
-      core.info(`${index} / ${pullRequestIntroductionsByAI.length} : a PR introduction is sent`);
+      core.info(`A PR introduction [${index+1}/${pullRequestIntroductionsByAI.length}] is sent`);
     }
   } catch (error) {
     core.error(error)
