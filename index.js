@@ -99,7 +99,7 @@ async function main() {
   let pullRequestIntroductionsByAI = []
 
   try {  // Get all Pull Request 
-    core.info(`1. Start to fetch Pull request by Github API`);
+    core.info(`▌ Start to fetch Pull request by Github API`);
     allPullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = allPullRequests.data.length
   } catch (error) {
@@ -211,7 +211,7 @@ async function main() {
   // 2. Modify: Reminder API(@Nissen) has not been updated for 95 hrs(3 day)
   // ========================================
   try {
-    core.info(`====== 1. Start Sending "PR statistics report" to slack channel ======`);
+    core.info(`▌ Start Sending "PR statistics report" to slack channel`);
     const prReportTitle = '【PR Report】'
     const prReportContents = [
       {boldText: `▌Pull Request Statistics: \n`},
@@ -250,7 +250,7 @@ async function main() {
       core.info(`Skip sending "Pull Request Detail Summary" due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`);
       return 
     }
-    core.info(`2. Start sending "Pull Request Detail Summary" to slack channel`);
+    core.info(`▌ Start sending "Pull Request Detail Summary" to slack channel`);
 
     const messageTitle = '【Pull Request Detail Summary】'
     const messageContents = [
@@ -260,7 +260,7 @@ async function main() {
     const resNotification = await sendNotification(threadBlocks);
     const threadNumber = resNotification['ts'] // slack thread number
 
-    core.info(`3. Start to reply PR introductions to slack thread`);
+    core.info(`▌ Start to reply PR introductions to slack thread`);
     for (const [index, prDetailBlock] of pullRequestIntroductionsByAI.entries()) {
       await sendNotification(prDetailBlock, threadNumber);
       core.info(`A PR introduction [${index+1}/${pullRequestIntroductionsByAI.length}] is sent`);
