@@ -105,7 +105,7 @@ async function main() {
 
   try {  // Get all Pull Request 
     core.info(`====== Start to fetch Pull request by Github API ======`);
-    allPullRequests = await getAllOpenPullRequests();
+    pullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = pullRequests.data.length
   } catch (error) {
     core.info(error);
@@ -116,7 +116,7 @@ async function main() {
 
   for (const [index , pr] of sortedPullRequests.entries()) {
 
-    core.info(`=========== ${index} /  ${sortedPullRequests.length }==============`);
+    core.info(`===========(${index}/${sortedPullRequests.length})==============`);
     core.info(`PR Title: ${pr.title}  (Create by @${pr.user.login})`);
     core.info(`PR Update time: ${pr.updated_at}`);
     core.info(`PR Create time: ${pr.created_at}`);
@@ -124,8 +124,6 @@ async function main() {
     const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
     const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
 
-
-    core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`)
 
     // 0. Skip Pull Requests are not exceeding PRLastUpdateTimeThreshold 
     if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
