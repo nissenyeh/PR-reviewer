@@ -39508,8 +39508,8 @@ async function main() {
 
   try {  // Get all Pull Request 
     core.info(`====== Start to fetch Pull request by Github API ======`);
-    pullRequests = await getAllOpenPullRequests();
-    totalPullRequestCount = pullRequests.data.length
+    allPullRequests = await getAllOpenPullRequests();
+    totalPullRequestCount = allPullRequests.data.length
   } catch (error) {
     core.info(error);
     core.error('Failed to to get Github pull requests. Please check and try again.');
