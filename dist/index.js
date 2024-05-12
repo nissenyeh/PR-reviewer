@@ -39578,8 +39578,8 @@ async function main() {
       1. Briefly introduce the content of the PR.
       2. Recommend what type of engineer should review it (what background/interests they should have).
       `
-      const ai_response = await getOpenAI(prompt, token)
-      const aiSuggestion = ai_response.data.choices[0].message.content
+      const aiResponse = await getOpenAI(prompt, process.env.OPEN_AI_API_TOKEN)
+      const aiSuggestion = aiResponse.data.choices[0].message.content
 
 
       const prDetailReportTitle = '【PR Patrol Report】'
