@@ -166,7 +166,7 @@ async function main() {
     try {
       if (!process.env.SLACK_TOKEN || !process.env.OPEN_AI_API_TOKEN ){
         core.info(`Skip to generate AI introduction for Pull Request due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN"`);
-        break
+        continue
       }
 
       core.info(`Strate generating AI introduction for Pull Request`);
@@ -251,9 +251,9 @@ async function main() {
     // 2. 我推薦具有資料視覺化或前端開發經驗的工程師來檢視這個 Pull Request。對於這些背景的工程師來說，他們對於如何在圖表中實現互動性會有更深入的了解，並且能夠確保新增功能的實現是符合最佳實踐的。
     // ========================================
   try {
-    if (!process.env.SLACK_TOKEN || pullRequestIntroductionsByAI.length ){
+    if (!process.env.SLACK_TOKEN || !process.env.OPEN_AI_API_TOKEN){
       core.info(`Skip sending "Pull Request Detail Summary" due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`);
-      break
+      return 
     }
     core.info(`============== 2. Start sending "Pull Request Detail Summary" to slack channel==============`);
 

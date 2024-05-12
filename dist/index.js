@@ -230,6 +230,8 @@ function generateSlackElement(type, value) {
 }
 
 
+
+
 function formatSlackMessageBlock(messageTitle, messageContents) {
 
   const titleBlocks = generateSlackTitleBlock(messageTitle)
@@ -39391,387 +39393,18 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-;// CONCATENATED MODULE: external "child_process"
-const external_child_process_namespaceObject = require("child_process");
-// EXTERNAL MODULE: external "util"
-var external_util_ = __nccwpck_require__(3837);
-;// CONCATENATED MODULE: ./exec-async.js
-
-
-
-async function execAsync(cmd, opts) {
-  const execAsyncFunc = util.promisify(exec)
-  return await execAsyncFunc(cmd, opts)
-}
-;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/constants.js
-const constants_LineType = {
-    Added: 'AddedLine',
-    Deleted: 'DeletedLine',
-    Unchanged: 'UnchangedLine',
-    Message: 'MessageLine',
-};
-const constants_FileType = {
-    Changed: 'ChangedFile',
-    Added: 'AddedFile',
-    Deleted: 'DeletedFile',
-    Renamed: 'RenamedFile',
-};
-const constants_ExtendedHeader = {
-    Index: 'index',
-    Old: 'old',
-    Copy: 'copy',
-    Similarity: 'similarity',
-    Dissimilarity: 'dissimilarity',
-    Deleted: 'deleted',
-    NewFile: 'new file',
-    RenameFrom: 'rename from',
-    RenameTo: 'rename to',
-};
-const constants_ExtendedHeaderValues = Object.values(constants_ExtendedHeader);
-//# sourceMappingURL=constants.js.map
-;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/parse-git-diff.js
-
-
-function parse_git_diff_parseGitDiff(diff, options) {
-    const ctx = new Context(diff, options);
-    const files = parseFileChanges(ctx);
-    return {
-        type: 'GitDiff',
-        files,
-    };
-}
-function parseFileChanges(ctx) {
-    const changedFiles = [];
-    while (!ctx.isEof()) {
-        const changed = parseFileChange(ctx);
-        if (!changed) {
-            break;
-        }
-        changedFiles.push(changed);
-    }
-    return changedFiles;
-}
-function parseFileChange(ctx) {
-    if (!isComparisonInputLine(ctx.getCurLine())) {
-        return;
-    }
-    ctx.nextLine();
-    let isDeleted = false;
-    let isNew = false;
-    let isRename = false;
-    let pathBefore = '';
-    let pathAfter = '';
-    while (!ctx.isEof()) {
-        const extHeader = parseExtendedHeader(ctx);
-        if (!extHeader) {
-            break;
-        }
-        if (extHeader.type === ExtendedHeader.Deleted)
-            isDeleted = true;
-        if (extHeader.type === ExtendedHeader.NewFile)
-            isNew = true;
-        if (extHeader.type === ExtendedHeader.RenameFrom) {
-            isRename = true;
-            pathBefore = extHeader.path;
-        }
-        if (extHeader.type === ExtendedHeader.RenameTo) {
-            isRename = true;
-            pathAfter = extHeader.path;
-        }
-    }
-    const changeMarkers = parseChangeMarkers(ctx);
-    const chunks = parseChunks(ctx);
-    if (isDeleted && changeMarkers) {
-        return {
-            type: FileType.Deleted,
-            chunks,
-            path: changeMarkers.deleted,
-        };
-    }
-    else if (isDeleted &&
-        chunks.length &&
-        chunks[0].type === 'BinaryFilesChunk') {
-        return {
-            type: FileType.Deleted,
-            chunks,
-            path: chunks[0].pathBefore,
-        };
-    }
-    else if (isNew && changeMarkers) {
-        return {
-            type: FileType.Added,
-            chunks,
-            path: changeMarkers.added,
-        };
-    }
-    else if (isNew && chunks.length && chunks[0].type === 'BinaryFilesChunk') {
-        return {
-            type: FileType.Added,
-            chunks,
-            path: chunks[0].pathAfter,
-        };
-    }
-    else if (isRename) {
-        return {
-            type: FileType.Renamed,
-            pathAfter,
-            pathBefore,
-            chunks,
-        };
-    }
-    else if (changeMarkers) {
-        return {
-            type: FileType.Changed,
-            chunks,
-            path: changeMarkers.added,
-        };
-    }
-    else if (chunks.length &&
-        chunks[0].type === 'BinaryFilesChunk' &&
-        chunks[0].pathAfter) {
-        return {
-            type: FileType.Changed,
-            chunks,
-            path: chunks[0].pathAfter,
-        };
-    }
-    return;
-}
-function isComparisonInputLine(line) {
-    return line.indexOf('diff') === 0;
-}
-function parseChunks(context) {
-    const chunks = [];
-    while (!context.isEof()) {
-        const chunk = parseChunk(context);
-        if (!chunk) {
-            break;
-        }
-        chunks.push(chunk);
-    }
-    return chunks;
-}
-function parseChunk(context) {
-    const chunkHeader = parseChunkHeader(context);
-    if (!chunkHeader) {
-        return;
-    }
-    if (chunkHeader.type === 'Normal') {
-        const changes = parseChanges(context, chunkHeader.fromFileRange, chunkHeader.toFileRange);
-        return {
-            ...chunkHeader,
-            type: 'Chunk',
-            changes,
-        };
-    }
-    else if (chunkHeader.type === 'Combined' &&
-        chunkHeader.fromFileRangeA &&
-        chunkHeader.fromFileRangeB) {
-        const changes = parseChanges(context, chunkHeader.fromFileRangeA.start < chunkHeader.fromFileRangeB.start
-            ? chunkHeader.fromFileRangeA
-            : chunkHeader.fromFileRangeB, chunkHeader.toFileRange);
-        return {
-            ...chunkHeader,
-            type: 'CombinedChunk',
-            changes,
-        };
-    }
-    else if (chunkHeader.type === 'BinaryFiles' &&
-        chunkHeader.fileA &&
-        chunkHeader.fileB) {
-        return {
-            type: 'BinaryFilesChunk',
-            pathBefore: chunkHeader.fileA,
-            pathAfter: chunkHeader.fileB,
-        };
-    }
-}
-function parseExtendedHeader(ctx) {
-    const line = ctx.getCurLine();
-    const type = ExtendedHeaderValues.find((v) => line.startsWith(v));
-    if (type) {
-        ctx.nextLine();
-    }
-    if (type === ExtendedHeader.RenameFrom || type === ExtendedHeader.RenameTo) {
-        return {
-            type,
-            path: line.slice(`${type} `.length),
-        };
-    }
-    else if (type) {
-        return {
-            type,
-        };
-    }
-    return null;
-}
-function parseChunkHeader(ctx) {
-    const line = ctx.getCurLine();
-    const normalChunkExec = /^@@\s\-(\d+),?(\d+)?\s\+(\d+),?(\d+)?\s@@\s?(.+)?/.exec(line);
-    if (!normalChunkExec) {
-        const combinedChunkExec = /^@@@\s\-(\d+),?(\d+)?\s\-(\d+),?(\d+)?\s\+(\d+),?(\d+)?\s@@@\s?(.+)?/.exec(line);
-        if (!combinedChunkExec) {
-            const binaryChunkExec = /^Binary\sfiles\s(.*)\sand\s(.*)\sdiffer$/.exec(line);
-            if (binaryChunkExec) {
-                const [all, fileA, fileB] = binaryChunkExec;
-                ctx.nextLine();
-                return {
-                    type: 'BinaryFiles',
-                    fileA: getFilePath(ctx, fileA, 'src'),
-                    fileB: getFilePath(ctx, fileB, 'dst'),
-                };
-            }
-            return null;
-        }
-        const [all, delStartA, delLinesA, delStartB, delLinesB, addStart, addLines, context,] = combinedChunkExec;
-        ctx.nextLine();
-        return {
-            context,
-            type: 'Combined',
-            fromFileRangeA: getRange(delStartA, delLinesA),
-            fromFileRangeB: getRange(delStartB, delLinesB),
-            toFileRange: getRange(addStart, addLines),
-        };
-    }
-    const [all, delStart, delLines, addStart, addLines, context] = normalChunkExec;
-    ctx.nextLine();
-    return {
-        context,
-        type: 'Normal',
-        toFileRange: getRange(addStart, addLines),
-        fromFileRange: getRange(delStart, delLines),
-    };
-}
-function getRange(start, lines) {
-    const startNum = parseInt(start, 10);
-    return {
-        start: startNum,
-        lines: lines === undefined ? startNum : parseInt(lines, 10),
-    };
-}
-function parseChangeMarkers(context) {
-    const deleterMarker = parseMarker(context, '--- ');
-    const deleted = deleterMarker
-        ? getFilePath(context, deleterMarker, 'src')
-        : deleterMarker;
-    const addedMarker = parseMarker(context, '+++ ');
-    const added = addedMarker
-        ? getFilePath(context, addedMarker, 'dst')
-        : addedMarker;
-    return added && deleted ? { added, deleted } : null;
-}
-function parseMarker(context, marker) {
-    const line = context.getCurLine();
-    if (line?.startsWith(marker)) {
-        context.nextLine();
-        return line.replace(marker, '');
-    }
-    return null;
-}
-const CHAR_TYPE_MAP = {
-    '+': constants_LineType.Added,
-    '-': constants_LineType.Deleted,
-    ' ': constants_LineType.Unchanged,
-    '\\': constants_LineType.Message,
-};
-function parseChanges(ctx, rangeBefore, rangeAfter) {
-    const changes = [];
-    let lineBefore = rangeBefore.start;
-    let lineAfter = rangeAfter.start;
-    while (!ctx.isEof()) {
-        const line = ctx.getCurLine();
-        const type = getLineType(line);
-        if (!type) {
-            break;
-        }
-        ctx.nextLine();
-        let change;
-        const content = line.slice(1);
-        switch (type) {
-            case LineType.Added: {
-                change = {
-                    type,
-                    lineAfter: lineAfter++,
-                    content,
-                };
-                break;
-            }
-            case LineType.Deleted: {
-                change = {
-                    type,
-                    lineBefore: lineBefore++,
-                    content,
-                };
-                break;
-            }
-            case LineType.Unchanged: {
-                change = {
-                    type,
-                    lineBefore: lineBefore++,
-                    lineAfter: lineAfter++,
-                    content,
-                };
-                break;
-            }
-            case LineType.Message: {
-                change = {
-                    type,
-                    content: content.trim(),
-                };
-                break;
-            }
-        }
-        changes.push(change);
-    }
-    return changes;
-}
-function getLineType(line) {
-    return CHAR_TYPE_MAP[line[0]] || null;
-}
-function getFilePath(ctx, input, type) {
-    if (ctx.options.noPrefix) {
-        return input;
-    }
-    if (type === 'src')
-        return input.replace(/^a\//, '');
-    if (type === 'dst')
-        return input.replace(/^b\//, '');
-}
-//# sourceMappingURL=parse-git-diff.js.map
-;// CONCATENATED MODULE: ./node_modules/parse-git-diff/build/mjs/index.js
-
-/* harmony default export */ const mjs = ((/* unused pure expression or super */ null && (parseGitDiff)));
-//# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ./index.js
 
 const core = __nccwpck_require__(2186);
-const { WebClient } = __nccwpck_require__(431)
-;
-
 const axios = __nccwpck_require__(8757);
+const { WebClient } = __nccwpck_require__(431)
 
 const {
   formatSlackMessageBlock,
@@ -39781,56 +39414,16 @@ const {
 } = __nccwpck_require__(3505);
 
 
-// fix: GITHUB_TOKEN 拿不到
-const { GITHUB_TOKEN, GITHUB_API_URL } = process.env;
-
-const GITHUB_REPOSITORY = 'junyiacademy/junyiacademy'
-
-const AUTH_HEADER = {
-  Authorization: `token ${GITHUB_TOKEN}`,
-};
-const PULLS_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
-
-
-const client = new WebClient(process.env.SLACK_TOKEN)
-
-
-
-/**
- * Send notification to a channel
- * @param {String} webhookUrl Webhook URL
- * @param {String} messageData Message data object to send into the channel
- * @return {Promise} Axios promise
- */
-async function sendNotification(slackBlocks, threadNumber = null) {
-
-  const channelID = core.getInput('channel-id');
-  if(process.env.SLACK_TOKEN){
-    return await client.chat.postMessage({
-      channel: channelID,
-      thread_ts: threadNumber,
-      blocks: slackBlocks
-    });
-  }
-
-  const webhookUrl = core.getInput('webhook-url');
-  const channelName = core.getInput('channel');
-
-  if(webhookUrl){
-    const messageObject = formatSlackMessage(channelName, slackBlocks);
-    return axios({
-      method: 'POST',
-      url: webhookUrl,
-      data: messageData,
-    });
-  } 
-}
-
-
-const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
 
 async function getAllOpenPullRequests() {
+  const { GITHUB_API_URL, GITHUB_TOKEN } = process.env;
+  const GITHUB_REPOSITORY = 'junyiacademy/junyiacademy'
+  const SEARCH_ENDPOINT = `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls`;
+  const AUTH_HEADER = {
+    Authorization: `token ${GITHUB_TOKEN}`,
+  };
   const query = `repo:${GITHUB_REPOSITORY} is:pr is:open`;
+
   return axios({
     method: 'GET',
     url: SEARCH_ENDPOINT,
@@ -39841,10 +39434,34 @@ async function getAllOpenPullRequests() {
   });
 }
 
-// call open AI
-async function getOpenAI(prompt) {
-  const { OPEN_AI_API_TOKEN } = process.env;
 
+async function sendNotification(slackBlocks, threadNumber = null) {
+  //  notify with slack token
+  if(process.env.SLACK_TOKEN){
+    const client = new WebClient(process.env.SLACK_TOKEN)
+    const channelID = core.getInput('SLACK_CHANNEL_ID');
+    return await client.chat.postMessage({
+      channel: channelID,
+      thread_ts: threadNumber,
+      blocks: slackBlocks
+    });
+  }
+
+  // notify bt slack webhookUrl
+  const slackWebhookUrl = core.getInput('SLACK_WEBHOOK_URL');
+  const slackChannelName = core.getInput('SLACK_CHANNEL_NAME');
+  if(slackWebhookUrl){
+    const messageObject = formatSlackMessage(slackChannelName, slackBlocks);
+    return axios({
+      method: 'POST',
+      url: slackWebhookUrl,
+      data: messageData,
+    });
+  } 
+}
+
+
+async function getOpenAI(prompt, token) {
   var data = JSON.stringify({
     "messages": [
       {
@@ -39861,7 +39478,7 @@ async function getOpenAI(prompt) {
     method: 'post',
     url: 'https://api.openai.com/v1/chat/completions',
     headers: { 
-      'Authorization':  `Bearer ${OPEN_AI_API_TOKEN}`,
+      'Authorization':  `Bearer ${token}`,
       'Content-Type': 'application/json', 
     },
     data : data
@@ -39869,170 +39486,196 @@ async function getOpenAI(prompt) {
   return axios(config);
 }
 
+const langDict = {
+  'en': 'English',
+  'zh': 'Chinese' 
+}
+
 /**
  * Main function for the GitHub Action
  */
 async function main() {
-  
-  const webhookUrl = core.getInput('webhook-url');
-  const channel = core.getInput('channel');
-  const channelID = core.getInput('channel-id');
-  const PRLastUpdateTimeThreshold = core.getInput('pr-last-updated-time-exceeding-x-hours');
 
+  const PRLastUpdateTimeThreshold = core.getInput('PR-LAST-UPDATED-TIME-EXCEEDING-X-HOURS');  
+  const lang = core.getInput('LANG');
+
+  let allPullRequests=[]
   let totalPullRequestCount = 0
   let pullRequestExceedTimeCount = 0
-  let reportPullRequest = []
-  let pullRequestDetailReport = []
 
-  try {
-     // 獲取 Pull Request 標題與內容
-    const pullRequests = await getAllOpenPullRequests();
+  let pullRequestSummaries = []
+  let pullRequestIntroductionsByAI = []
+
+  try {  // Get all Pull Request 
+    core.info(`====== Start to fetch Pull request by Github API ======`);
+    allPullRequests = await getAllOpenPullRequests();
     totalPullRequestCount = pullRequests.data.length
-
-    // 排序從小到大
-    const sortedPullRequests = pullRequests.data.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
-
-    for (const [index , pr] of sortedPullRequests.entries()) {
-
-      core.info(`==========Fetch Pull Request==============`);
-      core.info(`Pull Request Title: ${pr.title}`);
-      core.info(`Pull Request Body: ${pr.body}`);
-      core.info(`Pull Request Update time: ${pr.updated_at}`);
-      core.info(`Pull Request Create time: ${pr.created_at}`);
-
-      // 開啟時間
-      const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
-      const daysOpenMessage = daysOpen > 0 ? `(${daysOpen} day)` : ''
-
-      // 更新時間
-      const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
-      const lastUpdatedDaysMessage = lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''
-
-      // 如果超過 X 小時則跳過
-      core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`,)
-      core.info(`lastUpdatedHoursAgo:${lastUpdatedHoursAgo}`)
-      if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
-        continue
-      }
-      
-      pullRequestExceedTimeCount += 1;
-      
-      core.info(`${pr.title}  (Create by @${pr.user.login})`);
-      core.info(`已經開啟時間：已經存活 ${hoursOpen} 小時${daysOpenMessage}`);
-      core.info(`上次更時間：是 ${lastUpdatedHoursAgo} 小時${lastUpdatedDaysMessage}以前`);
-
-      // 生成 AI 建議
-      let aiSuggestion = ''
-      try {
-        core.info(`=========call open ai===============`);
-        const PR_BODY = pr.body.replace(/\n/g, ' ')
-        const prompt = `Github Pull Request 內容如下
-        標題：${pr.title} 內容：${PR_BODY}
-        -----
-        請幫我根據以上的標題與內容，用中文遵守以下格式，回答
-        1. 簡單介紹 PR 內容
-        2. 推薦什麼樣工程師 Review（什麼背景 / 興趣的人）
-        `
-        //  這邊可以調整一下，如果 fail 送提醒就好
-        const ai_response = await getOpenAI(prompt)
-        aiSuggestion = ai_response.data.choices[0].message.content
-        core.info(aiSuggestion);
-      } catch (error) {
-        aiSuggestion = '本次沒有生成 AI 建議'
-        core.error(error)
-        core.error('Open AI 失敗，請檢查並重新嘗試');
-      }
-      core.info(aiSuggestion)
-      
-      // 準備發送 slack message
-      try {
-        core.info(`=========Send slack Message===============`);
-        core.info(`ready to send message to ${webhookUrl} and ${channel}`)
-
-        // example: 3. New: Add Reminder Action (@Nissen) was last updated 25 hours (1 Day) ago
-        const messageReportContents = [
-          {text: `${index+1}. `},
-          {uelText:{
-            text:  pr.title,
-            url: pr.html_url
-          }},
-          {text: `(@${pr.user.login}) `},
-          {text:` has not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''} \n`},
-        ]
-        core.info(`index: ${index} `)
-        reportPullRequest = reportPullRequest.concat(messageReportContents)
-
-        // const createdAtMessage = `${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`
-        const prDetailReportTitle = '【PR Patrol Report】'
-        const prDetailReportContent = [
-          {boldText: `▌PR title (Author) : \n`}, 
-          {uelText:{
-            text:  pr.title,
-            url: pr.html_url
-          }},
-          {text: `(Create by @${pr.user.login}) \n`},
-          {boldText: `▌Created at : \n`},
-          {text:`${pr.created_at} - already created ${hoursOpen} hour ${daysOpenMessage} \n`},
-          {boldText: `▌Updated at: \n`},
-          {text:`${pr.updated_at} - not been updated for ${lastUpdatedHoursAgo} hrs${lastUpdatedDaysAgo > 0 ? ` (${lastUpdatedDaysAgo} day)` : ''} \n`},
-          {boldText: `▌ PR introduction (Powered By OpenAI):\n`},
-          {text: aiSuggestion},
-        ]
-
-        const slackBlocks = [formatSlackMessageBlock(prDetailReportTitle, prDetailReportContent) ] 
-        pullRequestDetailReport = pullRequestDetailReport.concat(slackBlocks)
-
-      } catch (error) {
-        core.error(error)
-        core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
-      }
-    
-    }
-
-    // 串接到 slack
-    // 看差異
   } catch (error) {
     core.info(error);
-    core.setFailed(error.message);
+    core.error('Failed to to get Github pull requests. Please check and try again.');
   }
 
-  // 準備發送 slack message
+  const sortedPullRequests = allPullRequests.data.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at)); 
+
+  for (const [index , pr] of sortedPullRequests.entries()) {
+
+    core.info(`=========== ${index} /  ${sortedPullRequests.length }==============`);
+    core.info(`PR Title: ${pr.title}  (Create by @${pr.user.login})`);
+    core.info(`PR Update time: ${pr.updated_at}`);
+    core.info(`PR Create time: ${pr.created_at}`);
+
+    const { hours: hoursOpen , days: daysOpen } = calculateTmeDifference(pr.created_at);
+    const { hours: lastUpdatedHoursAgo , days: lastUpdatedDaysAgo } = calculateTmeDifference(pr.updated_at)
+
+
+    core.info(`PRLastUpdateTimeThreshold: ${PRLastUpdateTimeThreshold}`)
+
+    // 0. Skip Pull Requests are not exceeding PRLastUpdateTimeThreshold 
+    if (lastUpdatedHoursAgo <= PRLastUpdateTimeThreshold){
+      continue
+    }
+    pullRequestExceedTimeCount += 1;
+
+
+    // 1. Generate PR summary message for slack
+    // ============== message example ===============
+    // - New: Add Reminder Action (@Nissen) was last updated 25 hours (1 Day) ago"
+    // - Modify: Reminder API(@Nissen) has not been updated for 95 hrs(3 day)
+    // ========================================
+    const messageReportContents = [
+      {text: `${index+1}. `},
+      {uelText:{
+        text:  pr.title,
+        url: pr.html_url
+      }},
+      {text: `(@${pr.user.login}) `},
+      {text:` has not been updated for ${lastUpdatedHoursAgo} hrs ${lastUpdatedDaysAgo > 0 ? `(${lastUpdatedDaysAgo} day)` : ''} \n`},
+    ]
+    pullRequestSummaries = pullRequestSummaries.concat(messageReportContents)
+
+
+    // 2. Generate PR detail (powered by AI) for slack ("SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`)
+    // ============== message example ===============
+    // ▌PR title (Author) :
+    // Feat: plotter 新增可拖曳 x 軸到標籤中間的折線圖(Create by @Kim716)
+    // ▌Created at :
+    // 2024-04-22T10:09:13Z - already created 431 hour (17 day)
+    // ▌Updated at:
+    // 2024-04-23T03:45:53Z - not been updated for 414 hrs (17 day)
+    // ▌ PR introduction (Powered By OpenAI):
+    // 1. 這個 Pull Request 的目的是在 plotter 中新增一個功能，讓使用者可以將 x 軸拖曳到標籤的中間，以便更精確地顯示折線圖的資料。
+    // 2. 我推薦具有資料視覺化或前端開發經驗的工程師來檢視這個 Pull Request。對於這些背景的工程師來說，他們對於如何在圖表中實現互動性會有更深入的了解，並且能夠確保新增功能的實現是符合最佳實踐的。
+    // ========================================
+    try {
+      if (!process.env.SLACK_TOKEN || !process.env.OPEN_AI_API_TOKEN ){
+        core.info(`Skip to generate AI introduction for Pull Request due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN"`);
+        continue
+      }
+
+      core.info(`Strate generating AI introduction for Pull Request`);
+      const PR_BODY = pr.body.replace(/\n/g, ' ')
+      const prompt = `Github Pull Request content is as follows
+      title：${pr.title} content：${PR_BODY}
+      -----
+      Please, based on the title and content above, answer in ${langDict(lang)} following the format below:
+      1. Briefly introduce the content of the PR.
+      2. Recommend what type of engineer should review it (what background/interests they should have).
+      `
+      const ai_response = await getOpenAI(prompt, token)
+      const aiSuggestion = ai_response.data.choices[0].message.content
+
+
+      const prDetailReportTitle = '【PR Patrol Report】'
+      const prDetailReportContent = [
+        {boldText: `▌PR title (Author) : \n`}, 
+        {uelText:{
+          text:  pr.title,
+          url: pr.html_url
+        }},
+        {text: `(Create by @${pr.user.login}) \n`},
+        {boldText: `▌Created at : \n`},
+        {text:`${pr.created_at} - already created ${hoursOpen} hrs ${daysOpen > 0 ? `(${daysOpen} day)` : ''} \n`},
+        {boldText: `▌Updated at: \n`},
+        {text:`${pr.updated_at} - not been updated for ${lastUpdatedHoursAgo} hrs ${lastUpdatedDaysAgo > 0 ? ` (${lastUpdatedDaysAgo} day)` : ''} \n`},
+        {boldText: `▌PR introduction (Powered by OpenAI):\n`},
+        {text: aiSuggestion},
+      ]
+      const slackBlocks = [formatSlackMessageBlock(prDetailReportTitle, prDetailReportContent) ] 
+      pullRequestIntroductionsByAI = pullRequestIntroductionsByAI.concat(slackBlocks)
+    } catch (error) {
+      core.error(error)
+      core.error('Failed to to generate AI suggestion, Please check and try again.');
+    }
+
+  } 
+
+  // 3. Send PR summary message to slack channel
+  // ============== message example ===============
+  // ▌Pull Request Statistics:
+  // There are 12 PRs (out of a total of 24) that havenot been updated in the last 24 hours.They might be waiting for the next commit, a code review, or just be closed. Keep going!
+  // ▌Pull Request Summary:
+  // 1. New: Add Reminder Action (@Nissen) was last updated 25 hours (1 Day) ago"
+  // 2. Modify: Reminder API(@Nissen) has not been updated for 95 hrs(3 day)
+  // ========================================
   try {
-    core.info(`=========Send slack PR report===============`);
+    core.info(`====== 1. Start Sending "PR statistics report" to slack channel ======`);
     const prReportTitle = '【PR Report】'
     const prReportContents = [
       {boldText: `▌Pull Request Statistics: \n`},
-      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that have`},
-      {boldText:`not been updated in the last ${PRLastUpdateTimeThreshold} hours.`},
-      {text:`They might be waiting for the next commit, a code review, or just be closed. Keep going! \n\n`},
+      {text:`There are ${pullRequestExceedTimeCount} PRs (out of a total of ${totalPullRequestCount}) that `},
+      {boldText:`have not been updated in the last ${PRLastUpdateTimeThreshold} hours. \n`},
+      {text:`They are waiting for the next commit, a code review, or just be closed. Keep going! \n\n`},
       {boldText: `▌Pull Request Summary: \n`},
-      ...reportPullRequest
+      ...pullRequestSummaries
     ]
     const slackBlocks = formatSlackMessageBlock(prReportTitle, prReportContents)
     await sendNotification(slackBlocks);
+    core.info(`A "PR statistics report" is sent`);
 
+  } catch (error) {
+    core.error(error)
+    core.error('Failed to send "PR statistics report" to slack channel, Please check and try again');
+  }
 
-    core.info(`=========Send slack PR detail ===============`);
-    const messageTitle = '【PR Detail】'
+  // 4. PR detail (powered by AI) to slack channel ( "SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`)
+    // ============== message example ===============
+    //【PR Detail】
+    // Detail will be in threads
+    // ============== threads message example ===============
+
+    // ▌PR title (Author) :
+    // Feat: plotter 新增可拖曳 x 軸到標籤中間的折線圖(Create by @Kim716)
+    // ▌Created at :
+    // 2024-04-22T10:09:13Z - already created 431 hour (17 day)
+    // ▌Updated at:
+    // 2024-04-23T03:45:53Z - not been updated for 414 hrs (17 day)
+    // ▌ PR introduction (Powered By OpenAI):
+    // 1. 這個 Pull Request 的目的是在 plotter 中新增一個功能，讓使用者可以將 x 軸拖曳到標籤的中間，以便更精確地顯示折線圖的資料。
+    // 2. 我推薦具有資料視覺化或前端開發經驗的工程師來檢視這個 Pull Request。對於這些背景的工程師來說，他們對於如何在圖表中實現互動性會有更深入的了解，並且能夠確保新增功能的實現是符合最佳實踐的。
+    // ========================================
+  try {
+    if (!process.env.SLACK_TOKEN || !process.env.OPEN_AI_API_TOKEN){
+      core.info(`Skip sending "Pull Request Detail Summary" due to missing "SLACK_TOKEN" & "OPEN_AI_API_TOKEN" are required`);
+      return 
+    }
+    core.info(`============== 2. Start sending "Pull Request Detail Summary" to slack channel==============`);
+
+    const messageTitle = '【Pull Request Detail Summary】'
     const messageContents = [
-      {text:`Detail will be in threads`},
+      {text:`Pull Request Status will be added in this threads`},
     ]
     const threadBlocks = formatSlackMessageBlock(messageTitle, messageContents)
     const resNotification = await sendNotification(threadBlocks);
-    core.info(`resNotification:${resNotification}`)
-    const threadNumber = resNotification['ts']
-    core.info(`threadNumber:${threadNumber}`)
+    const threadNumber = resNotification['ts'] // slack thread number
 
-    for (const prDetailBlock of pullRequestDetailReport) {
-      core.info(`prDetailBlock:${prDetailBlock}`)
+    core.info(`============== Start to reply PR introductions to slack thread ============== `);
+    for (const [index, prDetailBlock] of pullRequestIntroductionsByAI.entries()) {
       await sendNotification(prDetailBlock, threadNumber);
-
+      core.info(`${index} / ${pullRequestIntroductionsByAI.length} : a PR introduction is sent`);
     }
-    
-    
   } catch (error) {
     core.error(error)
-    core.error('發送 Slack 通知失敗，請檢查並重新嘗試');
+    core.error('Failed to send "Pull Request Detail Summary" to slack channel, Please check and try again');
   }
 
 
